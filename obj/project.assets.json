@@ -185,19 +185,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\sigge bratt\\.nuget\\packages\\": {}
+    "C:\\Users\\Admin\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\sigge bratt\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj",
+      "projectUniqueName": "C:\\Users\\Admin\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj",
       "projectName": "MenuWithDatabase",
-      "projectPath": "C:\\Users\\sigge bratt\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj",
-      "packagesPath": "C:\\Users\\sigge bratt\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\sigge bratt\\RiderProjects\\holiday_maker\\obj\\",
+      "projectPath": "C:\\Users\\Admin\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj",
+      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Admin\\RiderProjects\\holiday_maker\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\sigge bratt\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
