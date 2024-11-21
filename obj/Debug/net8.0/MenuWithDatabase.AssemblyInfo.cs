@@ -13,11 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MenuWithDatabase")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-<<<<<<< HEAD
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+25b8b19a29fa033475f00a0fec598953b6d24e42")]
-=======
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1eead3d1b15b279ba91e27cd4d28213cd34e76d0")]
->>>>>>> origin/main
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+518a7f127b83b97b91c4030c06f96eadc5ade522")]
 [assembly: System.Reflection.AssemblyProductAttribute("MenuWithDatabase")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MenuWithDatabase")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

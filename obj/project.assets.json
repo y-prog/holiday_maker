@@ -185,20 +185,19 @@
     ]
   },
   "packageFolders": {
-    "/Users/sebastianholmbergnilsson/.nuget/packages/": {}
+    "C:\\Users\\sigge bratt\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/sebastianholmbergnilsson/RiderProjects/holiday_maker/MenuWithDatabase.csproj",
+      "projectUniqueName": "C:\\Users\\sigge bratt\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj",
       "projectName": "MenuWithDatabase",
-      "projectPath": "/Users/sebastianholmbergnilsson/RiderProjects/holiday_maker/MenuWithDatabase.csproj",
-      "packagesPath": "/Users/sebastianholmbergnilsson/.nuget/packages/",
-      "outputPath": "/Users/sebastianholmbergnilsson/RiderProjects/holiday_maker/obj/",
+      "projectPath": "C:\\Users\\sigge bratt\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj",
+      "packagesPath": "C:\\Users\\sigge bratt\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\sigge bratt\\RiderProjects\\holiday_maker\\obj\\",
       "projectStyle": "PackageReference",
-      "UsingMicrosoftNETSdk": false,
       "configFilePaths": [
-        "/Users/sebastianholmbergnilsson/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\sigge bratt\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -248,7 +247,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.403/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "akmNhJXp/aY=",
+  "dgSpecHash": "BE28HdiOoAI=",
   "success": true,
-  "projectFilePath": "/Users/sebastianholmbergnilsson/RiderProjects/holiday_maker/MenuWithDatabase.csproj",
+  "projectFilePath": "C:\\Users\\sigge bratt\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj",
   "expectedPackageFiles": [
-    "/Users/sebastianholmbergnilsson/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.2/microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512",
-    "/Users/sebastianholmbergnilsson/.nuget/packages/microsoft.extensions.logging.abstractions/8.0.2/microsoft.extensions.logging.abstractions.8.0.2.nupkg.sha512",
-    "/Users/sebastianholmbergnilsson/.nuget/packages/npgsql/9.0.1/npgsql.9.0.1.nupkg.sha512"
+    "C:\\Users\\sigge bratt\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.2\\microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512",
+    "C:\\Users\\sigge bratt\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.2\\microsoft.extensions.logging.abstractions.8.0.2.nupkg.sha512",
+    "C:\\Users\\sigge bratt\\.nuget\\packages\\npgsql\\9.0.1\\npgsql.9.0.1.nupkg.sha512"
   ],
   "logs": []
 }
