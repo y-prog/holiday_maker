@@ -1,32 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Shaab\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj": {}
+    "C:\\Users\\sigge bratt\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Shaab\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj": {
+    "C:\\Users\\sigge bratt\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Shaab\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj",
+        "projectUniqueName": "C:\\Users\\sigge bratt\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj",
         "projectName": "MenuWithDatabase",
-        "projectPath": "C:\\Users\\Shaab\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj",
-        "packagesPath": "C:\\Users\\Shaab\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Shaab\\RiderProjects\\holiday_maker\\obj\\",
+        "projectPath": "C:\\Users\\sigge bratt\\RiderProjects\\holiday_maker\\MenuWithDatabase.csproj",
+        "packagesPath": "C:\\Users\\sigge bratt\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\sigge bratt\\RiderProjects\\holiday_maker\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Shaab\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\sigge bratt\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
