@@ -18,7 +18,7 @@ M E R G E
 Tips : Dubbelkolla vilken branch ni är inne i innan ni kör en merge. Detta för att undvika att ni kör merge till fel branch!
 
 3. När ni är redo att ladda upp er nya kod till huvud koden efter flertalet tester inne i er egen branch byter ni branch till main detta genom att skriva git checkout main.
-Väl inne i main skriver ni följande git merge <namn på er branch> för att hämta er kod in till main.
+Väl inne i main skriver ni följande git merge namn på er branch för att hämta er kod in till main.
 
 B R A N C H
 
