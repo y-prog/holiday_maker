@@ -4,9 +4,12 @@ namespace MenuWithDatabase;
 
 
 
+using System;
+
 public class Menu
 {
-    Actions _actions;
+    private readonly Actions _actions;
+
     public Menu(Actions actions)
     {
         _actions = actions;
@@ -15,12 +18,11 @@ public class Menu
 
     private void PrintMenu()
     {
-        Console.WriteLine("Choose option");
-        Console.WriteLine("1. Create Booking");
-        Console.WriteLine("2. Show one");
-        Console.WriteLine("3. Add one");
-        Console.WriteLine("4. Update one");
-        Console.WriteLine("5. Delete one");
+        Console.WriteLine("Choose an option:");
+        Console.WriteLine("1. Search Available Rooms");
+        Console.WriteLine("2. Create Booking");
+        Console.WriteLine("3. Sort Rooms");
+        Console.WriteLine("98. debugg");
         Console.WriteLine("9. Quit");
         AskUser();
     }
@@ -30,104 +32,84 @@ public class Menu
         var response = Console.ReadLine();
         if (response is not null)
         {
-            string? id; // define for multiple use below
-            
             switch (response)
             {
-                case("1"):
-                    Console.Write("Write City :  ");
+                case "1": // Search Available Rooms
+                    Console.Write("City: ");
                     string city = Console.ReadLine();
-                    // Feature för filtrera på city Sigge
-                    
-                    
-                    Console.Write("Price Per Night : ");
-                    string pricePerNight = Console.ReadLine();
-                    //Feature för filtrera på price per night Sebastian
-                    
-                    
-                    Console.Write("Date : ");
-                    string date = Console.ReadLine();
-                    //Feature för filtrera på date Shaban
-                    
-                    
-                    Console.Write("Room type : "); 
+                    Console.Write("Price Per Night: ");
+                    decimal maxPrice = decimal.Parse(Console.ReadLine());
+                    Console.Write("Date (YYYY-MM-DD): ");
+                    DateTime date = DateTime.Parse(Console.ReadLine());
+                    Console.Write("Room type: ");
                     string roomType = Console.ReadLine();
-                    //Feature för filtrera på room type Yani
-                    
-                    
-                    Console.Write("Distance To Beach : ");
-                    string distanceToBeach = Console.ReadLine();
-                    //Feature för filtrera på distance to beach
-                    
-                    
-                    Console.Write("Distance To Center : ");
-                    string distanceToCenter = Console.ReadLine();
-                    //Feature för filtrera på distance to center
-                    
-                    Console.Write("Has Pool : ");
-                    string hasPool = Console.ReadLine();
-                    //Feature för filtrera på has pool
-                    
-                    Console.Write("Has Entertainment : ");
-                    string hasEntertainment = Console.ReadLine();
-                    //Feature för filtrera på has entertainment
-                    
-                    Console.Write("Has Kids Club : ");
-                    string hasKidsClub = Console.ReadLine();
-                    //Feature för filtrera på has kids club
-                    
-                    Console.Write("Has Restaurant : ");
-                    string hasRestaurant = Console.ReadLine();
-                    //Feature för filtrera på has restaurant
-                    
-                    Console.Write("Rating : ");
-                    string rating = Console.ReadLine();
-                    //Feature för filtrera på rating
-                    
+                    Console.Write("Max Distance To Beach: ");
+                    int maxDistanceToBeach = int.Parse(Console.ReadLine());
+                    Console.Write("Max Distance To Center: ");
+                    int maxDistanceToCenter = int.Parse(Console.ReadLine());
+                    Console.Write("Has Pool (true/false): ");
+                    bool hasPool = bool.Parse(Console.ReadLine());
+                    Console.Write("Has Entertainment (true/false): ");
+                    bool hasEntertainment = bool.Parse(Console.ReadLine());
+                    Console.Write("Has Kids Club (true/false): ");
+                    bool hasKidsClub = bool.Parse(Console.ReadLine());
+                    Console.Write("Has Restaurant (true/false): ");
+                    bool hasRestaurant = bool.Parse(Console.ReadLine());
+                    Console.Write("Minimum Rating: ");
+                    decimal minRating = decimal.Parse(Console.ReadLine());
+
+                    var availableRooms = await _actions.SearchAvailableRooms(city, maxPrice, date, roomType, maxDistanceToBeach, maxDistanceToCenter, hasPool, hasEntertainment, hasKidsClub, hasRestaurant, minRating);
+
+                    Console.WriteLine("\nAvailable Accommodations:");
+                    availableRooms.ForEach(Console.WriteLine);
                     break;
-                
-                
-                case("2"):
-                    Console.WriteLine("Back to the main menu");
-                   //  FeatureBack to the main menu
-                   
-                   
+
+                case "2": // Create Booking
+                    Console.Write("Customer ID: ");
+                    int customerId = int.Parse(Console.ReadLine());
+                    Console.Write("Accommodation ID: ");
+                    int accommodationId = int.Parse(Console.ReadLine());
+                    Console.Write("Start Date (YYYY-MM-DD): ");
+                    DateTime startDate = DateTime.Parse(Console.ReadLine());
+                    Console.Write("End Date (YYYY-MM-DD): ");
+                    DateTime endDate = DateTime.Parse(Console.ReadLine());
+                    Console.Write("Extra Bed (true/false): ");
+                    bool extraBed = bool.Parse(Console.ReadLine());
+                    Console.Write("Half Board (true/false): ");
+                    bool halfBoard = bool.Parse(Console.ReadLine());
+                    Console.Write("Full Board (true/false): ");
+                    bool fullBoard = bool.Parse(Console.ReadLine());
+
+                    await _actions.CreateBooking(customerId, accommodationId, startDate, endDate, extraBed, halfBoard, fullBoard);
                     break;
-                case("3"):
-                    Console.WriteLine("Enter name (required)");
-                    var name = Console.ReadLine(); // required
-                    Console.WriteLine("Enter slogan");
-                    var slogan = Console.ReadLine(); // not required
-                    if (name is not null)
-                    {
-                        _actions.AddOne(name, slogan);
-                    }
+
+                case "3": // Sort Rooms
+                    Console.Write("Sort by (price/rating): ");
+                    string sortBy = Console.ReadLine();
+                    var sortedRooms = await _actions.GetSortedRooms(sortBy);
+
+                    Console.WriteLine("\nSorted Accommodations:");
+                    sortedRooms.ForEach(Console.WriteLine);
                     break;
-                case("4"):
-                    Console.WriteLine("Enter id to update one");
-                    id = Console.ReadLine();
-                    if (id is not null)
-                    { 
-                        _actions.UpdateOne(id);
-                    }
-                    break;
-                case("5"):
-                    Console.WriteLine("Enter id to delete one");
-                    id = Console.ReadLine();
-                    if (id is not null)
-                    { 
-                        _actions.DeleteOne(id);
-                    }
-                    break;
-                case("9"):
-                    Console.WriteLine("Quitting");
+
+                case "9": // Quit
+                    Console.WriteLine("Exiting program.");
                     Environment.Exit(0);
                     break;
+
+                default:
+                    Console.WriteLine("Invalid option. Please try again.");
+                    break;
+                
+                case "98": // List table content
+                    Console.Write("Enter table name: ");
+                    string tableName = Console.ReadLine();
+                    await _actions.ListTable(tableName);
+                    break;
+
             }
 
             PrintMenu();
         }
-        
     }
-    
 }
