@@ -7,6 +7,7 @@ namespace MenuWithDatabase;
 public class Menu
 {
     Actions _actions;
+
     public Menu(Actions actions)
     {
         _actions = actions;
@@ -31,103 +32,39 @@ public class Menu
         if (response is not null)
         {
             string? id; // define for multiple use below
-            
+
             switch (response)
             {
-                case("1"):
-                    Console.Write("Write City :  ");
-                    string city = Console.ReadLine();
-                    // Feature för filtrera på city Sigge
-                    
-                    
-                    Console.Write("Price Per Night : ");
-                    string pricePerNight = Console.ReadLine();
-                    //Feature för filtrera på price per night Sebastian
-                    
-                    
-                    Console.Write("Date : ");
-                    string date = Console.ReadLine();
-                    //Feature för filtrera på date Shaban
-                    
-                    
-                    Console.Write("Room type : "); 
-                    string roomType = Console.ReadLine();
-                    //Feature för filtrera på room type Yani
-                    
-                    
-                    Console.Write("Distance To Beach : ");
-                    string distanceToBeach = Console.ReadLine();
-                    //Feature för filtrera på distance to beach
-                    
-                    
-                    Console.Write("Distance To Center : ");
-                    string distanceToCenter = Console.ReadLine();
-                    //Feature för filtrera på distance to center
-                    
-                    Console.Write("Has Pool : ");
-                    string hasPool = Console.ReadLine();
-                    //Feature för filtrera på has pool
-                    
-                    Console.Write("Has Entertainment : ");
-                    string hasEntertainment = Console.ReadLine();
-                    //Feature för filtrera på has entertainment
-                    
-                    Console.Write("Has Kids Club : ");
-                    string hasKidsClub = Console.ReadLine();
-                    //Feature för filtrera på has kids club
-                    
-                    Console.Write("Has Restaurant : ");
-                    string hasRestaurant = Console.ReadLine();
-                    //Feature för filtrera på has restaurant
-                    
-                    Console.Write("Rating : ");
-                    string rating = Console.ReadLine();
-                    //Feature för filtrera på rating
+
+                case ("1"):
+                     _actions.listCity(); 
+
+
+                    /*await _actions.dateStart(); // start date   
+                    await _actions.dateEnd(); // end date
+                    await _actions.RoomType(); // list room types
+                    await _actions.priceNight(); // price per night
+                    await _actions.distanceBeach(); // distance to beach
+                    await _actions.distanceCenter(); // distance to center
+                    await _actions.hasPool(); // has pool   
+                    await _actions.hasEntertaiment(); // has entertainment
+                    await _actions.hasKidsClub(); // has kids club
+                    await _actions.hasRestaurant(); // has restaurant
+                    await _actions.rating(); // rating
+                    await _actions.extraBed(); // extra bed
+                    await _actions.fullBoard(); // want fullboard?
+                    await _actions.halfBoard(); // want halfboard?
+                    await _actions.ShowResults(); // show result */
                     
                     break;
-                
-                
-                case("2"):
-                    Console.WriteLine("Back to the main menu");
-                   //  FeatureBack to the main menu
-                   
-                   
-                    break;
-                case("3"):
-                    Console.WriteLine("Enter name (required)");
-                    var name = Console.ReadLine(); // required
-                    Console.WriteLine("Enter slogan");
-                    var slogan = Console.ReadLine(); // not required
-                    if (name is not null)
-                    {
-                        _actions.AddOne(name, slogan);
-                    }
-                    break;
-                case("4"):
-                    Console.WriteLine("Enter id to update one");
-                    id = Console.ReadLine();
-                    if (id is not null)
-                    { 
-                        _actions.UpdateOne(id);
-                    }
-                    break;
-                case("5"):
-                    Console.WriteLine("Enter id to delete one");
-                    id = Console.ReadLine();
-                    if (id is not null)
-                    { 
-                        _actions.DeleteOne(id);
-                    }
-                    break;
-                case("9"):
-                    Console.WriteLine("Quitting");
-                    Environment.Exit(0);
-                    break;
+
+
+
+
+                    PrintMenu();
             }
 
-            PrintMenu();
         }
-        
+
     }
-    
 }

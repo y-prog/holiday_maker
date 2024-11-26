@@ -1,33 +1,45 @@
 using System;
-
+ 
 using Npgsql;
 namespace MenuWithDatabase;
-
-
+ 
+ 
 public class Actions
 {
-    NpgsqlDataSource _db;
-    
-    public Actions(NpgsqlDataSource db)
+    NpgsqlDataSource _holidaymaker;
+    public Actions(NpgsqlDataSource holidaymaker)
     {
-        _db = db;
+        _holidaymaker =holidaymaker;
     }
-
-    public async void ListAll()
+ 
+    public async void listCity()
     {
-        await using (var cmd = _db.CreateCommand("SELECT * FROM items"))
-        await using (var reader = await cmd.ExecuteReaderAsync())
+        // Fråga användaren om vilken stad de vill söka på
+        Console.Write("Enter city name: ");
+        string city = Console.ReadLine();
+
+        // Förbered SQL-kommandot för att hämta städer från vyn "LedigaRum" där city matchar
+        await using (var cmd = _holidaymaker.CreateCommand("SELECT city FROM  ledigaRum WHERE city = city"))
         {
-            while (await reader.ReadAsync())
+            // Lägg till parameter för city
+            cmd.Parameters.AddWithValue("@city", city);
+
+            // Kör kommandot och hämta resultatet
+            await using (var reader = await cmd.ExecuteReaderAsync())
             {
-                Console.WriteLine($"id: {reader.GetInt32(0)} \t name: {reader.GetString(1)}");
+                // Läs varje rad från resultatet
+                while (await reader.ReadAsync())
+                {
+                    // Skriv ut endast city
+                    Console.WriteLine($"city: {reader.GetString(0)}");
+                }
             }
         }
     }
 
     public async void ShowOne(string id)
     {
-        await using (var cmd = _db.CreateCommand("SELECT * FROM items WHERE id = $1"))
+        await using (var cmd = _holidaymaker.CreateCommand("SELECT * FROM customers WHERE id = $1"))
         {
             cmd.Parameters.AddWithValue(int.Parse(id));
             await using (var reader = await cmd.ExecuteReaderAsync())
@@ -39,18 +51,18 @@ public class Actions
             }
         }
     }
-
+ 
     public async void AddOne(string name, string? slogan)
     {
         // Insert data
-        await using (var cmd = _db.CreateCommand("INSERT INTO items (name, slogan) VALUES ($1, $2)"))
+        await using (var cmd = _holidaymaker.CreateCommand("INSERT INTO items (name, slogan) VALUES ($1, $2)"))
         {
             cmd.Parameters.AddWithValue(name);
             cmd.Parameters.AddWithValue(slogan);
             await cmd.ExecuteNonQueryAsync();
         }
     }
-
+ 
     public async void UpdateOne(string id)
     {
         Console.WriteLine("Current entry:");
@@ -62,26 +74,25 @@ public class Actions
         if (name is not null)
         {
             // Update data
-            await using (var cmd = _db.CreateCommand("UPDATE items SET name = $2, slogan = $3 WHERE id = $1"))
+            await using (var cmd = _holidaymaker.CreateCommand("UPDATE items SET name = $2, slogan = $3 WHERE id = $1"))
             {
                 cmd.Parameters.AddWithValue(int.Parse(id));
                 cmd.Parameters.AddWithValue(name);
                 cmd.Parameters.AddWithValue(slogan);
                 await cmd.ExecuteNonQueryAsync();
             }
-            
         }
     }
-    
     public async void DeleteOne(string id)
     {
         // Delete data
-        await using (var cmd = _db.CreateCommand("DELETE FROM items WHERE id = $1"))
+        await using (var cmd = _holidaymaker.CreateCommand("DELETE FROM items WHERE id = $1"))
         {
             cmd.Parameters.AddWithValue(int.Parse(id));
             await cmd.ExecuteNonQueryAsync();
+            
+            
         }
     }
-    
 }
-
+ 
