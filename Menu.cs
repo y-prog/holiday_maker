@@ -37,22 +37,22 @@ public class Menu
                 case("1"):
                     Console.Write("Write City :  ");
                     string city = Console.ReadLine();
-                    // Feature för filtrera på city
+                    // Feature för filtrera på city Sigge
                     
                     
                     Console.Write("Price Per Night : ");
                     string pricePerNight = Console.ReadLine();
-                    //Feature för filtrera på price per night
+                    //Feature för filtrera på price per night Sebastian
                     
                     
                     Console.Write("Date : ");
                     string date = Console.ReadLine();
-                    //Feature för filtrera på date
+                    //Feature för filtrera på date Shaban
                     
                     
-                    Console.Write("Room type : ");
+                    Console.Write("Room type : "); 
                     string roomType = Console.ReadLine();
-                    //Feature för filtrera på room type
+                    //Feature för filtrera på room type Yani
                     
                     
                     Console.Write("Distance To Beach : ");
@@ -85,6 +85,8 @@ public class Menu
                     //Feature för filtrera på rating
                     
                     break;
+                
+                
                 case("2"):
                     Console.WriteLine("Back to the main menu");
                    //  FeatureBack to the main menu
