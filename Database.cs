@@ -5,7 +5,7 @@ namespace MenuWithDatabase;
 public class Database
 {
 
-    private readonly string _host = "45.10.162.20";
+    private readonly string _host = "45.10.162.204";
     private readonly string _port = "5436";
     private readonly string _username = "postgres";
     private readonly string _password = "HealthyDealerSweats!";
