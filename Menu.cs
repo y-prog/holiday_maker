@@ -17,9 +17,9 @@ public class Menu
     {
         Console.WriteLine("Choose option");
         Console.WriteLine("1. Create Booking");
-        Console.WriteLine("2. Show one");
-        Console.WriteLine("3. Add one");
-        Console.WriteLine("4. Update one");
+        Console.WriteLine("2. Sort Ascending");
+        Console.WriteLine("3. Sort Ratings");
+        Console.WriteLine("4. Insert New Customer");
         Console.WriteLine("5. Delete one");
         Console.WriteLine("9. Quit");
         AskUser();
@@ -35,82 +35,60 @@ public class Menu
             switch (response)
             {
                 case("1"):
-                    Console.Write("Write City :  ");
-                    string city = Console.ReadLine();
-                    // Feature för filtrera på city Sigge
-                    
-                    
-                    Console.Write("Price Per Night : ");
-                    string pricePerNight = Console.ReadLine();
-                    //Feature för filtrera på price per night Sebastian
-                    
-                    
-                    Console.Write("Date : ");
-                    string date = Console.ReadLine();
-                    //Feature för filtrera på date Shaban
-                    
-                    
-                    Console.Write("Room type : "); 
-                    string roomType = Console.ReadLine();
-                    //Feature för filtrera på room type Yani
-                    
-                    
-                    Console.Write("Distance To Beach : ");
-                    string distanceToBeach = Console.ReadLine();
-                    //Feature för filtrera på distance to beach
-                    
-                    
-                    Console.Write("Distance To Center : ");
-                    string distanceToCenter = Console.ReadLine();
-                    //Feature för filtrera på distance to center
-                    
-                    Console.Write("Has Pool : ");
-                    string hasPool = Console.ReadLine();
-                    //Feature för filtrera på has pool
-                    
-                    Console.Write("Has Entertainment : ");
-                    string hasEntertainment = Console.ReadLine();
-                    //Feature för filtrera på has entertainment
-                    
-                    Console.Write("Has Kids Club : ");
-                    string hasKidsClub = Console.ReadLine();
-                    //Feature för filtrera på has kids club
-                    
-                    Console.Write("Has Restaurant : ");
-                    string hasRestaurant = Console.ReadLine();
-                    //Feature för filtrera på has restaurant
-                    
-                    Console.Write("Rating : ");
-                    string rating = Console.ReadLine();
-                    //Feature för filtrera på rating
-                    
+                    Console.WriteLine("Listing all");
+                    _actions.ListAll(); // test functions 
                     break;
                 
                 
                 case("2"):
-                    Console.WriteLine("Back to the main menu");
-                   //  FeatureBack to the main menu
-                   
-                   
+                    Console.WriteLine("Sort in ascending order by city and room type:");
+
+                    // Prompt user for city and room type for filtering
+                    Console.Write("Enter city name to search (or press Enter to skip): ");
+                    string city = Console.ReadLine();
+
+                    Console.Write("Enter room type (size_id) to search (or press Enter to skip): ");
+                    string sizeIdInput = Console.ReadLine();
+                    int? sizeId = string.IsNullOrWhiteSpace(sizeIdInput) ? (int?)null : int.Parse(sizeIdInput);
+
+                    // Call the SortAfterPrice method with city and sizeId filters
+                    _actions.SortAfterPrice();
+
                     break;
+
+                
                 case("3"):
-                    Console.WriteLine("Enter name (required)");
-                    var name = Console.ReadLine(); // required
-                    Console.WriteLine("Enter slogan");
-                    var slogan = Console.ReadLine(); // not required
-                    if (name is not null)
-                    {
-                        _actions.AddOne(name, slogan);
-                    }
+                    Console.WriteLine("Sort by Ratings");
+                    _actions.SortAfterRatings(); // by hotel name
                     break;
-                case("4"):
-                    Console.WriteLine("Enter id to update one");
-                    id = Console.ReadLine();
-                    if (id is not null)
-                    { 
-                        _actions.UpdateOne(id);
-                    }
+                    
+                
+                // Inside your menu logic (example case "4" for Registering a New User)
+                case ("4"):
+                    Console.WriteLine("Registering new customer...");
+    
+                    // Collect customer details
+                    Console.Write("First Name: ");
+                    string firstName = Console.ReadLine();
+    
+                    Console.Write("Last Name: ");
+                    string lastName = Console.ReadLine();
+    
+                    Console.Write("Email: ");
+                    string email = Console.ReadLine();
+    
+                    Console.Write("Phone Number: ");
+                    string phoneNumber = Console.ReadLine();
+    
+                    Console.Write("Date of Birth (yyyy-mm-dd): ");
+                    DateTime dateOfBirth = DateTime.Parse(Console.ReadLine());
+
+                    // Call RegisterCustomerAsync to insert the new customer
+                    await _actions.RegisterCustomerAsync(firstName, lastName, email, phoneNumber, dateOfBirth);
+                    Console.WriteLine("Customer added");
                     break;
+
+                
                 case("5"):
                     Console.WriteLine("Enter id to delete one");
                     id = Console.ReadLine();
