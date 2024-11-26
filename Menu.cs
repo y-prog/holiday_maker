@@ -1,6 +1,8 @@
+using System;
+
 namespace MenuWithDatabase;
 
-using System;
+
 
 public class Menu
 {
