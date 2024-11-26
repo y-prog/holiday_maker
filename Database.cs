@@ -5,11 +5,11 @@ namespace MenuWithDatabase;
 public class Database
 {
 
-    private readonly string _host = "localhost";
-    private readonly string _port = "5432";
+    private readonly string _host = "45.10.162.20";
+    private readonly string _port = "5436";
     private readonly string _username = "postgres";
-    private readonly string _password = "root";
-    private readonly string _database = "database_for_menu";
+    private readonly string _password = "HealthyDealerSweats!";
+    private readonly string _database = "holidaymaker";
 
     private NpgsqlDataSource _connection;
 
