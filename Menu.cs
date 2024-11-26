@@ -1,6 +1,8 @@
+using System;
+
 namespace MenuWithDatabase;
 
-using System;
+
 
 public class Menu
 {
@@ -14,7 +16,7 @@ public class Menu
     private void PrintMenu()
     {
         Console.WriteLine("Choose option");
-        Console.WriteLine("1. List all");
+        Console.WriteLine("1. Create Booking");
         Console.WriteLine("2. Show one");
         Console.WriteLine("3. Add one");
         Console.WriteLine("4. Update one");
@@ -33,16 +35,63 @@ public class Menu
             switch (response)
             {
                 case("1"):
-                    Console.WriteLine("Listing all");
-                    _actions.ListAll();
+                    Console.Write("Write City :  ");
+                    string city = Console.ReadLine();
+                    // Feature för filtrera på city Sigge
+                    
+                    
+                    Console.Write("Price Per Night : ");
+                    string pricePerNight = Console.ReadLine();
+                    //Feature för filtrera på price per night Sebastian
+                    
+                    
+                    Console.Write("Date : ");
+                    string date = Console.ReadLine();
+                    //Feature för filtrera på date Shaban
+                    
+                    
+                    Console.Write("Room type : "); 
+                    string roomType = Console.ReadLine();
+                    //Feature för filtrera på room type Yani
+                    
+                    
+                    Console.Write("Distance To Beach : ");
+                    string distanceToBeach = Console.ReadLine();
+                    //Feature för filtrera på distance to beach
+                    
+                    
+                    Console.Write("Distance To Center : ");
+                    string distanceToCenter = Console.ReadLine();
+                    //Feature för filtrera på distance to center
+                    
+                    Console.Write("Has Pool : ");
+                    string hasPool = Console.ReadLine();
+                    //Feature för filtrera på has pool
+                    
+                    Console.Write("Has Entertainment : ");
+                    string hasEntertainment = Console.ReadLine();
+                    //Feature för filtrera på has entertainment
+                    
+                    Console.Write("Has Kids Club : ");
+                    string hasKidsClub = Console.ReadLine();
+                    //Feature för filtrera på has kids club
+                    
+                    Console.Write("Has Restaurant : ");
+                    string hasRestaurant = Console.ReadLine();
+                    //Feature för filtrera på has restaurant
+                    
+                    Console.Write("Rating : ");
+                    string rating = Console.ReadLine();
+                    //Feature för filtrera på rating
+                    
                     break;
+                
+                
                 case("2"):
-                    Console.WriteLine("Enter id to show details about one");
-                    id = Console.ReadLine();
-                    if (id is not null)
-                    { 
-                        _actions.ShowOne(id);
-                    }
+                    Console.WriteLine("Back to the main menu");
+                   //  FeatureBack to the main menu
+                   
+                   
                     break;
                 case("3"):
                     Console.WriteLine("Enter name (required)");
