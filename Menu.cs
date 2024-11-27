@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices.JavaScript;
 
 namespace MenuWithDatabase;
 
@@ -41,13 +42,17 @@ public class Menu
                     string city = Console.ReadLine();
                     if (city is not null)
                     {
-                        _actions.listCity(city);
+                      _actions.listCity(city);
                     }
+                    
+                    Console.Write("Enter start date: ");
+                    DateTime dateStart = DateTime.Parse(Console.ReadLine());
+                    
+                         _actions.DateStart(dateStart);
+                    
+                   
                     break;
-
-
-                    /*await _actions.dateStart(); // start date
-                    await _actions.dateEnd(); // end date
+                    /*await _actions.dateEnd(); // end date
                     await _actions.RoomType(); // list room types
                     await _actions.priceNight(); // price per night
                     await _actions.distanceBeach(); // distance to beach

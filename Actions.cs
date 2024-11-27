@@ -2,20 +2,21 @@ using System;
  
 using Npgsql;
 namespace MenuWithDatabase;
- 
- 
+
+
 public class Actions
 {
     NpgsqlDataSource _holidaymaker;
+
     public Actions(NpgsqlDataSource holidaymaker)
     {
-        _holidaymaker =holidaymaker;
+        _holidaymaker = holidaymaker;
     }
- 
+
     public async void listCity(string city)
     {
         // Fråga användaren om vilken stad de vill söka på
-       
+
 
         // Förbered SQL-kommandot för att hämta städer från vyn "LedigaRum" där city matchar
         await using (var cmd = _holidaymaker.CreateCommand("SELECT city FROM  ledigaRum WHERE city =  $1"))
@@ -45,12 +46,13 @@ public class Actions
             {
                 while (await reader.ReadAsync())
                 {
-                    Console.WriteLine($"id: {reader.GetInt32(0)} \t name: {reader.GetString(1)} \t slogan: {reader.GetString(2)}");
+                    Console.WriteLine(
+                        $"id: {reader.GetInt32(0)} \t name: {reader.GetString(1)} \t slogan: {reader.GetString(2)}");
                 }
             }
         }
     }
- 
+
     public async void AddOne(string name, string? slogan)
     {
         // Insert data
@@ -61,7 +63,7 @@ public class Actions
             await cmd.ExecuteNonQueryAsync();
         }
     }
- 
+
     public async void UpdateOne(string id)
     {
         Console.WriteLine("Current entry:");
@@ -82,6 +84,7 @@ public class Actions
             }
         }
     }
+
     public async void DeleteOne(string id)
     {
         // Delete data
@@ -89,9 +92,33 @@ public class Actions
         {
             cmd.Parameters.AddWithValue(int.Parse(id));
             await cmd.ExecuteNonQueryAsync();
-            
-            
+
+
+        }
+    }
+
+
+    public async void DateStart(DateTime dateStart)
+    {
+        // Fråga användaren om vilket startdatum de vill söka på
+
+        // Förbered SQL-kommandot för att hämta städer från vyn "LedigaRum" där city matchar
+        await using (var cmd = _holidaymaker.CreateCommand("SELECT dateStart FROM  ledigaRum WHERE dateStart =  $1"))
+        {
+            // Lägg till parameter för dateStart
+            cmd.Parameters.AddWithValue(dateStart);
+
+            // Kör kommandot och hämta resultatet
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                // Läs varje rad från resultatet
+                while (await reader.ReadAsync())
+                {
+                    // Skriv ut endast dateStart
+                    Console.WriteLine($"dateStart: {reader.GetDateTime(0)}");
+                }
+            }
         }
     }
 }
- 
+
