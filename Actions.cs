@@ -12,17 +12,16 @@ public class Actions
         _holidaymaker =holidaymaker;
     }
  
-    public async void listCity()
+    public async void listCity(string city)
     {
         // Fråga användaren om vilken stad de vill söka på
-        Console.Write("Enter city name: ");
-        string city = Console.ReadLine();
+       
 
         // Förbered SQL-kommandot för att hämta städer från vyn "LedigaRum" där city matchar
-        await using (var cmd = _holidaymaker.CreateCommand("SELECT city FROM  ledigaRum WHERE city = city"))
+        await using (var cmd = _holidaymaker.CreateCommand("SELECT city FROM  ledigaRum WHERE city =  $1"))
         {
             // Lägg till parameter för city
-            cmd.Parameters.AddWithValue("@city", city);
+            cmd.Parameters.AddWithValue(city);
 
             // Kör kommandot och hämta resultatet
             await using (var reader = await cmd.ExecuteReaderAsync())

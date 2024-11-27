@@ -37,16 +37,21 @@ public class Menu
             {
 
                 case ("1"):
-                     _actions.listCity(); 
+                    Console.Write("Enter city name: ");
+                    string city = Console.ReadLine();
+                    if (city is not null)
+                    {
+                        _actions.listCity(city);
+                    }
 
 
-                    /*await _actions.dateStart(); // start date   
+                    /*await _actions.dateStart(); // start date
                     await _actions.dateEnd(); // end date
                     await _actions.RoomType(); // list room types
                     await _actions.priceNight(); // price per night
                     await _actions.distanceBeach(); // distance to beach
                     await _actions.distanceCenter(); // distance to center
-                    await _actions.hasPool(); // has pool   
+                    await _actions.hasPool(); // has pool
                     await _actions.hasEntertaiment(); // has entertainment
                     await _actions.hasKidsClub(); // has kids club
                     await _actions.hasRestaurant(); // has restaurant
