@@ -34,20 +34,21 @@ public async Task<List<string>> SearchAvailableRooms(
 
     // Ny SQL-query med namngivna parametrar
     string query = @"
-        SELECT a.accommodation_name, a.price_per_night, a.city, a.ratings
-        FROM ledigaRum a
-        WHERE a.city = @city
-          AND a.price_per_night <= @maxPrice
-          AND a.distance_to_beach <= @maxDistanceToBeach
-          AND a.distance_to_city_center <= @maxDistanceToCenter
-          AND a.has_pool = @hasPool
-          AND a.has_evening_entertainment = @hasEntertainment
-          AND a.has_kids_club = @hasKidsClub
-          AND a.has_restaurants = @hasRestaurant
-          AND a.ratings >= @minRating
-          AND a.date_from <= @startDate
-          AND a.date_to >= @endDate
-          AND a.room_type = @roomType";
+    SELECT a.accommodation_id, a.accommodation_name, a.price_per_night, a.city, a.ratings
+    FROM ledigaRum a
+    WHERE a.city = @city
+      AND a.price_per_night <= @maxPrice
+      AND a.distance_to_beach <= @maxDistanceToBeach
+      AND a.distance_to_city_center <= @maxDistanceToCenter
+      AND a.has_pool = @hasPool
+      AND a.has_evening_entertainment = @hasEntertainment
+      AND a.has_kids_club = @hasKidsClub
+      AND a.has_restaurants = @hasRestaurant
+      AND a.ratings >= @minRating
+      AND a.date_from <= @startDate
+      AND a.date_to >= @endDate
+      AND a.room_type = @roomType";
+
 
     // Om hotelname är angivet, lägg till filter
     if (!string.IsNullOrEmpty(hotelname))
@@ -91,12 +92,13 @@ public async Task<List<string>> SearchAvailableRooms(
             {
                 while (await reader.ReadAsync())
                 {
-                    string hotelName = reader.GetString(0);
-                    decimal price = reader.GetDecimal(1);
-                    string cityResult = reader.GetString(2);
-                    decimal rating = reader.GetDecimal(3);
+                    int accommodationId = reader.GetInt32(0);  // Get the accommodation_id (first column)
+                    string hotelName = reader.GetString(1);     // Get the accommodation_name (second column)
+                    decimal price = reader.GetDecimal(2);       // Get the price_per_night (third column)
+                    string cityResult = reader.GetString(3);    // Get the city (fourth column)
+                    decimal rating = reader.GetDecimal(4);      // Get the ratings (fifth column)
 
-                    availableRooms.Add($"Hotel: {hotelName}, Price: {price}, City: {cityResult}, Rating: {rating}");
+                    availableRooms.Add($"ID: {accommodationId}, Hotel: {hotelName}, Price: {price}, City: {cityResult}, Rating: {rating}");
                 }
             }
         }
@@ -108,14 +110,6 @@ public async Task<List<string>> SearchAvailableRooms(
 
     return availableRooms;
 }
-
-
-
-
-
-
-
-
 
     public async Task CreateBooking(int customerId, int accommodationId, DateTime startDate, DateTime endDate, bool extraBed, bool halfBoard, bool fullBoard)
     {
