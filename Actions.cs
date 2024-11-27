@@ -162,34 +162,57 @@ public async Task<List<string>> SearchAvailableRooms(
         return sortedRooms;
     }
 
-    public async Task UpdateBooking(string bookingId, string? newStartDate, string? newEndDate, string? newExtraBed, string? newHalfBoard, string? newFullBoard)
+   public async Task UpdateBooking(string bookingId, string? newStartDate, string? newEndDate, string? newExtraBed, string? newHalfBoard, string? newFullBoard)
+{
+    try
     {
-        try
+        // Try parsing the start date and end date, default to null if empty
+        DateTime? parsedStartDate = null;
+        DateTime? parsedEndDate = null;
+
+        // Only parse if the value is not null or empty
+        if (!string.IsNullOrEmpty(newStartDate) && DateTime.TryParse(newStartDate, out DateTime startDate))
         {
-            await using (var cmd = _holidaymaker.CreateCommand(@"
-                UPDATE booking 
-                SET start_date = COALESCE($2, start_date),
-                    end_date = COALESCE($3, end_date),
-                    extra_bed = COALESCE($4, extra_bed),
-                    half_board = COALESCE($5, half_board),
-                    full_board = COALESCE($6, full_board)
-                WHERE id = $1"))
-            {
-                cmd.Parameters.AddWithValue(int.Parse(bookingId));
-                cmd.Parameters.AddWithValue(newStartDate);
-                cmd.Parameters.AddWithValue(newEndDate);
-                cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newExtraBed) ? (object)DBNull.Value : bool.Parse(newExtraBed));
-                cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newHalfBoard) ? (object)DBNull.Value : bool.Parse(newHalfBoard));
-                cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newFullBoard) ? (object)DBNull.Value : bool.Parse(newFullBoard));
-                await cmd.ExecuteNonQueryAsync();
-                Console.WriteLine("Booking updated successfully.");
-            }
+            parsedStartDate = startDate;
         }
-        catch (Exception ex)
+
+        if (!string.IsNullOrEmpty(newEndDate) && DateTime.TryParse(newEndDate, out DateTime endDate))
         {
-            Console.WriteLine($"Error updating booking: {ex.Message}");
+            parsedEndDate = endDate;
+        }
+
+        await using (var cmd = _holidaymaker.CreateCommand(@"
+            UPDATE booking 
+            SET start_date = COALESCE($2, start_date),
+                end_date = COALESCE($3, end_date),
+                extra_bed = COALESCE($4, extra_bed),
+                half_board = COALESCE($5, half_board),
+                full_board = COALESCE($6, full_board)
+            WHERE id = $1"))
+        {
+            // Add parameters
+            cmd.Parameters.AddWithValue(int.Parse(bookingId));  // Assuming bookingId is valid integer
+
+            // Use parsed date values, or DBNull if not provided (empty)
+            cmd.Parameters.AddWithValue(parsedStartDate.HasValue ? (object)parsedStartDate.Value : DBNull.Value);
+            cmd.Parameters.AddWithValue(parsedEndDate.HasValue ? (object)parsedEndDate.Value : DBNull.Value);
+
+            // Handle boolean values: if empty, use DBNull.Value
+            cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newExtraBed) ? (object)DBNull.Value : bool.Parse(newExtraBed));
+            cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newHalfBoard) ? (object)DBNull.Value : bool.Parse(newHalfBoard));
+            cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newFullBoard) ? (object)DBNull.Value : bool.Parse(newFullBoard));
+
+            // Execute the update command
+            await cmd.ExecuteNonQueryAsync();
+            Console.WriteLine("Booking updated successfully.");
         }
     }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error updating booking: {ex.Message}");
+    }
+}
+
 
     public async Task DeleteBooking(string bookingId)
     {

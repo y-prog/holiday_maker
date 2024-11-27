@@ -270,17 +270,18 @@ public class Menu
         Console.Write("New End Date (YYYY-MM-DD): ");
         string? newEndDate = Console.ReadLine();
 
-        Console.Write("New Extra Bed (true/false): ");
+        Console.Write("New Extra Bed (true/false, leave empty to keep current): ");
         string? newExtraBed = Console.ReadLine();
 
-        Console.Write("New Half Board (true/false): ");
+        Console.Write("New Half Board (true/false, leave empty to keep current): ");
         string? newHalfBoard = Console.ReadLine();
 
-        Console.Write("New Full Board (true/false): ");
+        Console.Write("New Full Board (true/false, leave empty to keep current): ");
         string? newFullBoard = Console.ReadLine();
 
         await _actions.UpdateBooking(bookingId, newStartDate, newEndDate, newExtraBed, newHalfBoard, newFullBoard);
     }
+
 
     private async Task DeleteBooking()
     {
