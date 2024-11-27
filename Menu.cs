@@ -43,6 +43,7 @@ public class Menu
                     {
                         _actions.listCity(city);
                     }
+                    break;
 
 
                     /*await _actions.dateStart(); // start date
@@ -61,15 +62,14 @@ public class Menu
                     await _actions.halfBoard(); // want halfboard?
                     await _actions.ShowResults(); // show result */
                     
-                    break;
+                    
 
 
 
-
-                    PrintMenu();
+                    
             }
 
         }
-
+        PrintMenu();
     }
 }
