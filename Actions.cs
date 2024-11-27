@@ -15,9 +15,9 @@ public class Actions
         _holidaymaker = holidaymaker;
     }
 
-   public async Task<List<string>> SearchAvailableRooms(
+public async Task<List<string>> SearchAvailableRooms(
     string city,
-    string? name,
+    string? hotelname,
     decimal maxPrice,
     DateTime startDate,
     DateTime endDate,
@@ -32,52 +32,69 @@ public class Actions
 {
     List<string> availableRooms = new List<string>();
 
+    // Ny SQL-query med namngivna parametrar
     string query = @"
-        SELECT a.name, a.price_per_night, a.city, a.ratings 
+        SELECT a.accommodation_name, a.price_per_night, a.city, a.ratings
         FROM ledigaRum a
-        WHERE a.city = $1 
-          AND ($2 IS NULL OR a.name ILIKE $2)
-          AND a.price_per_night <= $3
-          AND a.distance_to_beach <= $4
-          AND a.distance_to_city_center <= $5
-          AND a.has_pool = $6
-          AND a.has_evening_entertainment = $7
-          AND a.has_kids_club = $8
-          AND a.has_restaurants = $9
-          AND a.ratings >= $10
-          AND a.date_from <= $11
-          AND a.date_to >= $12
-          AND a.room_type = $13";
+        WHERE a.city = @city
+          AND a.price_per_night <= @maxPrice
+          AND a.distance_to_beach <= @maxDistanceToBeach
+          AND a.distance_to_city_center <= @maxDistanceToCenter
+          AND a.has_pool = @hasPool
+          AND a.has_evening_entertainment = @hasEntertainment
+          AND a.has_kids_club = @hasKidsClub
+          AND a.has_restaurants = @hasRestaurant
+          AND a.ratings >= @minRating
+          AND a.date_from <= @startDate
+          AND a.date_to >= @endDate
+          AND a.room_type = @roomType";
+
+    // Om hotelname är angivet, lägg till filter
+    if (!string.IsNullOrEmpty(hotelname))
+    {
+        query += " AND a.accommodation_name ILIKE @hotelName";
+    }
 
     try
     {
-        Console.WriteLine($"SQL Query: {query}");
-        Console.WriteLine($"Parameters: city={city}, name={name ?? "Any"}, maxPrice={maxPrice}, startDate={startDate}, endDate={endDate}, roomType={roomType}, maxDistanceToBeach={maxDistanceToBeach}, maxDistanceToCenter={maxDistanceToCenter}, hasPool={hasPool}, hasEntertainment={hasEntertainment}, hasKidsClub={hasKidsClub}, hasRestaurant={hasRestaurant}, minRating={minRating}");
-
         await using (var cmd = _holidaymaker.CreateCommand(query))
         {
-            cmd.Parameters.AddWithValue(city);
-            cmd.Parameters.AddWithValue(string.IsNullOrEmpty(name) ? DBNull.Value : $"%{name}%"); // Filtrera om `name` är angivet
-            cmd.Parameters.AddWithValue(maxPrice);
-            cmd.Parameters.AddWithValue(maxDistanceToBeach);
-            cmd.Parameters.AddWithValue(maxDistanceToCenter);
-            cmd.Parameters.AddWithValue(hasPool);
-            cmd.Parameters.AddWithValue(hasEntertainment);
-            cmd.Parameters.AddWithValue(hasKidsClub);
-            cmd.Parameters.AddWithValue(hasRestaurant);
-            cmd.Parameters.AddWithValue(minRating);
-            cmd.Parameters.AddWithValue(startDate);
-            cmd.Parameters.AddWithValue(endDate);
-            cmd.Parameters.AddWithValue(roomType);
+            // Bind parametrarna till SQL-kommandot
+            cmd.Parameters.Add(new NpgsqlParameter("@city", NpgsqlTypes.NpgsqlDbType.Text) { Value = city });
+            cmd.Parameters.Add(new NpgsqlParameter("@maxPrice", NpgsqlTypes.NpgsqlDbType.Numeric) { Value = maxPrice });
+            cmd.Parameters.Add(new NpgsqlParameter("@maxDistanceToBeach", NpgsqlTypes.NpgsqlDbType.Integer) { Value = maxDistanceToBeach });
+            cmd.Parameters.Add(new NpgsqlParameter("@maxDistanceToCenter", NpgsqlTypes.NpgsqlDbType.Integer) { Value = maxDistanceToCenter });
+            cmd.Parameters.Add(new NpgsqlParameter("@hasPool", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasPool });
+            cmd.Parameters.Add(new NpgsqlParameter("@hasEntertainment", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasEntertainment });
+            cmd.Parameters.Add(new NpgsqlParameter("@hasKidsClub", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasKidsClub });
+            cmd.Parameters.Add(new NpgsqlParameter("@hasRestaurant", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasRestaurant });
+            cmd.Parameters.Add(new NpgsqlParameter("@minRating", NpgsqlTypes.NpgsqlDbType.Numeric) { Value = minRating });
+            cmd.Parameters.Add(new NpgsqlParameter("@startDate", NpgsqlTypes.NpgsqlDbType.Timestamp) { Value = startDate });
+            cmd.Parameters.Add(new NpgsqlParameter("@endDate", NpgsqlTypes.NpgsqlDbType.Timestamp) { Value = endDate });
+            cmd.Parameters.Add(new NpgsqlParameter("@roomType", NpgsqlTypes.NpgsqlDbType.Text) { Value = roomType });
 
+            if (!string.IsNullOrEmpty(hotelname))
+            {
+                cmd.Parameters.Add(new NpgsqlParameter("@hotelName", NpgsqlTypes.NpgsqlDbType.Text) { Value = $"%{hotelname}%" });
+            }
+
+            Console.WriteLine("Executing SQL Query:");
+            Console.WriteLine(cmd.CommandText);
+
+            foreach (NpgsqlParameter param in cmd.Parameters)
+            {
+                Console.WriteLine($"Param: {param.ParameterName}, Value: {param.Value}, Type: {param.NpgsqlDbType}");
+            }
+
+            // Utför frågan
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    string hotelName = reader.GetString(0); // TEXT/VARCHAR
-                    decimal price = reader.GetDecimal(1); // NUMERIC/DECIMAL
-                    string cityResult = reader.GetString(2); // TEXT/VARCHAR
-                    decimal rating = reader.GetDecimal(3); // NUMERIC/DECIMAL
+                    string hotelName = reader.GetString(0);
+                    decimal price = reader.GetDecimal(1);
+                    string cityResult = reader.GetString(2);
+                    decimal rating = reader.GetDecimal(3);
 
                     availableRooms.Add($"Hotel: {hotelName}, Price: {price}, City: {cityResult}, Rating: {rating}");
                 }
@@ -89,13 +106,14 @@ public class Actions
         Console.WriteLine($"Error: {ex.Message}");
     }
 
-    if (availableRooms.Count == 0)
-    {
-        Console.WriteLine("No available accommodations match your criteria.");
-    }
-
     return availableRooms;
 }
+
+
+
+
+
+
 
 
 
