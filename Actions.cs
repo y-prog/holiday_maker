@@ -218,12 +218,32 @@ public async Task<List<string>> SearchAvailableRooms(
     {
         try
         {
-            await using (var cmd = _holidaymaker.CreateCommand("SELECT * FROM booking"))
+            // SQL-frågan som anropar vyn
+            string query = "SELECT * FROM bokningsInfo";
+
+            await using (var cmd = _holidaymaker.CreateCommand(query))
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
+                Console.WriteLine("Bookings:");
                 while (await reader.ReadAsync())
                 {
-                    Console.WriteLine($"ID: {reader["id"]}, Customer ID: {reader["customer_id"]}, Accommodation ID: {reader["accommodation_id"]}, Start Date: {reader["start_date"]}, End Date: {reader["end_date"]}");
+                    // Hämta alla relevanta kolumner från vyn
+                    Console.WriteLine($"Booking ID: {reader["booking_id"]}");
+                    Console.WriteLine($"Customer Name: {reader["customer_name"]}");
+                    Console.WriteLine($"Customer Email: {reader["customer_email"]}");
+                    Console.WriteLine($"Customer Phone: {reader["customer_phone"]}");
+                    Console.WriteLine($"Accommodation Name: {reader["accommodation_name"]}");
+                    Console.WriteLine($"City: {reader["city"]}, Country: {reader["country"]}");
+                    Console.WriteLine($"Room Type: {reader["room_type"]}, Beds: {reader["beds"]}, Total Persons: {reader["total_persons"]}");
+                    Console.WriteLine($"Start Date: {reader["start_date"]}, End Date: {reader["end_date"]}");
+                    Console.WriteLine($"Extra Bed: {reader["extra_bed"]}, Half Board: {reader["half_board"]}, Full Board: {reader["full_board"]}");
+                
+                    // Kontrollera om gruppmedlemmar finns
+                    if (reader["group_member_id"] != DBNull.Value && reader["group_member_name"] != DBNull.Value)
+                    {
+                        Console.WriteLine($"Group Member ID: {reader["group_member_id"]}, Name: {reader["group_member_name"]}");
+                    }
+                    Console.WriteLine(new string('-', 50)); // Separator mellan bokningar
                 }
             }
         }
