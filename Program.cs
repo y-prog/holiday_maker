@@ -1,13 +1,20 @@
-﻿namespace MenuWithDatabase;
+﻿using System;
+using System.Threading.Tasks;
+using Npgsql;
 
-class Program
+namespace MenuWithDatabase
 {
-    
-    static void Main(string[] args)
+    public class Program
     {
-        Database database = new();
-        var db = database.Connection();
-        var actions = new Actions(db);
-        new Menu(actions);
+        public static async Task Main(string[] args)
+        {
+            var database = new Database();
+            var connection = database.Connection();
+
+            var actions = new Actions(connection);
+            var menu = new Menu(actions);
+
+            await menu.ShowMenu();
+        }
     }
 }

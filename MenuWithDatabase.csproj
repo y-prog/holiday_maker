@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <Compile Remove="Booking.cs" />
+      <Compile Remove="BookingDetails.cs" />
     </ItemGroup>
 
 </Project>
