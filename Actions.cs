@@ -18,66 +18,60 @@ public class Actions
 public async Task<List<string>> SearchAvailableRooms(
     string city,
     string? hotelname,
-    decimal maxPrice,
-    DateTime startDate,
-    DateTime endDate,
-    string roomType,
-    int maxDistanceToBeach,
-    int maxDistanceToCenter,
-    bool hasPool,
-    bool hasEntertainment,
-    bool hasKidsClub,
-    bool hasRestaurant,
-    decimal minRating)
+    decimal? maxPrice,          
+    DateTime? startDate,        
+    DateTime? endDate,          
+    string? roomType,           
+    int? maxDistanceToBeach,    
+    int? maxDistanceToCenter,   
+    bool? hasPool,              
+    bool? hasEntertainment,     
+    bool? hasKidsClub,          
+    bool? hasRestaurant,        
+    decimal? minRating)         
 {
     List<string> availableRooms = new List<string>();
 
-    // Ny SQL-query med namngivna parametrar
+    // Updated SQL query with availability dates included
     string query = @"
-    SELECT a.accommodation_id, a.accommodation_name, a.price_per_night, a.city, a.ratings
-    FROM ledigaRum a
-    WHERE a.city = @city
-      AND a.price_per_night <= @maxPrice
-      AND a.distance_to_beach <= @maxDistanceToBeach
-      AND a.distance_to_city_center <= @maxDistanceToCenter
-      AND a.has_pool = @hasPool
-      AND a.has_evening_entertainment = @hasEntertainment
-      AND a.has_kids_club = @hasKidsClub
-      AND a.has_restaurants = @hasRestaurant
-      AND a.ratings >= @minRating
-      AND a.date_from <= @startDate
-      AND a.date_to >= @endDate
-      AND a.room_type = @roomType";
+        SELECT a.accommodation_id, a.accommodation_name, a.price_per_night, a.city, a.ratings, 
+               a.date_from, a.date_to
+        FROM ledigaRum a
+        WHERE 1 = 1"; 
 
-
-    // Om hotelname är angivet, lägg till filter
-    if (!string.IsNullOrEmpty(hotelname))
-    {
-        query += " AND a.accommodation_name ILIKE @hotelName";
-    }
+    // Adding conditions to the query (same as your current logic)
+    if (!string.IsNullOrEmpty(city)) query += " AND a.city = @city";
+    if (maxPrice.HasValue) query += " AND a.price_per_night <= @maxPrice";
+    if (maxDistanceToBeach.HasValue) query += " AND a.distance_to_beach <= @maxDistanceToBeach";
+    if (maxDistanceToCenter.HasValue) query += " AND a.distance_to_city_center <= @maxDistanceToCenter";
+    if (hasPool.HasValue) query += " AND a.has_pool = @hasPool";
+    if (hasEntertainment.HasValue) query += " AND a.has_evening_entertainment = @hasEntertainment";
+    if (hasKidsClub.HasValue) query += " AND a.has_kids_club = @hasKidsClub";
+    if (hasRestaurant.HasValue) query += " AND a.has_restaurants = @hasRestaurant";
+    if (minRating.HasValue) query += " AND a.ratings >= @minRating";
+    if (startDate.HasValue) query += " AND a.date_from <= @startDate";
+    if (endDate.HasValue) query += " AND a.date_to >= @endDate";
+    if (!string.IsNullOrEmpty(roomType)) query += " AND a.room_type = @roomType";
+    if (!string.IsNullOrEmpty(hotelname)) query += " AND a.accommodation_name ILIKE @hotelName";
 
     try
     {
         await using (var cmd = _holidaymaker.CreateCommand(query))
         {
-            // Bind parametrarna till SQL-kommandot
-            cmd.Parameters.Add(new NpgsqlParameter("@city", NpgsqlTypes.NpgsqlDbType.Text) { Value = city });
-            cmd.Parameters.Add(new NpgsqlParameter("@maxPrice", NpgsqlTypes.NpgsqlDbType.Numeric) { Value = maxPrice });
-            cmd.Parameters.Add(new NpgsqlParameter("@maxDistanceToBeach", NpgsqlTypes.NpgsqlDbType.Integer) { Value = maxDistanceToBeach });
-            cmd.Parameters.Add(new NpgsqlParameter("@maxDistanceToCenter", NpgsqlTypes.NpgsqlDbType.Integer) { Value = maxDistanceToCenter });
-            cmd.Parameters.Add(new NpgsqlParameter("@hasPool", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasPool });
-            cmd.Parameters.Add(new NpgsqlParameter("@hasEntertainment", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasEntertainment });
-            cmd.Parameters.Add(new NpgsqlParameter("@hasKidsClub", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasKidsClub });
-            cmd.Parameters.Add(new NpgsqlParameter("@hasRestaurant", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasRestaurant });
-            cmd.Parameters.Add(new NpgsqlParameter("@minRating", NpgsqlTypes.NpgsqlDbType.Numeric) { Value = minRating });
-            cmd.Parameters.Add(new NpgsqlParameter("@startDate", NpgsqlTypes.NpgsqlDbType.Timestamp) { Value = startDate });
-            cmd.Parameters.Add(new NpgsqlParameter("@endDate", NpgsqlTypes.NpgsqlDbType.Timestamp) { Value = endDate });
-            cmd.Parameters.Add(new NpgsqlParameter("@roomType", NpgsqlTypes.NpgsqlDbType.Text) { Value = roomType });
-
-            if (!string.IsNullOrEmpty(hotelname))
-            {
-                cmd.Parameters.Add(new NpgsqlParameter("@hotelName", NpgsqlTypes.NpgsqlDbType.Text) { Value = $"%{hotelname}%" });
-            }
+            // Adding parameters to the command (same as your current logic)
+            if (!string.IsNullOrEmpty(city)) cmd.Parameters.Add(new NpgsqlParameter("@city", NpgsqlTypes.NpgsqlDbType.Text) { Value = city });
+            if (maxPrice.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@maxPrice", NpgsqlTypes.NpgsqlDbType.Numeric) { Value = maxPrice.Value });
+            if (maxDistanceToBeach.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@maxDistanceToBeach", NpgsqlTypes.NpgsqlDbType.Integer) { Value = maxDistanceToBeach.Value });
+            if (maxDistanceToCenter.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@maxDistanceToCenter", NpgsqlTypes.NpgsqlDbType.Integer) { Value = maxDistanceToCenter.Value });
+            if (hasPool.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@hasPool", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasPool.Value });
+            if (hasEntertainment.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@hasEntertainment", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasEntertainment.Value });
+            if (hasKidsClub.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@hasKidsClub", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasKidsClub.Value });
+            if (hasRestaurant.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@hasRestaurant", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasRestaurant.Value });
+            if (minRating.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@minRating", NpgsqlTypes.NpgsqlDbType.Numeric) { Value = minRating.Value });
+            if (startDate.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@startDate", NpgsqlTypes.NpgsqlDbType.Timestamp) { Value = startDate.Value });
+            if (endDate.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@endDate", NpgsqlTypes.NpgsqlDbType.Timestamp) { Value = endDate.Value });
+            if (!string.IsNullOrEmpty(roomType)) cmd.Parameters.Add(new NpgsqlParameter("@roomType", NpgsqlTypes.NpgsqlDbType.Text) { Value = roomType });
+            if (!string.IsNullOrEmpty(hotelname)) cmd.Parameters.Add(new NpgsqlParameter("@hotelName", NpgsqlTypes.NpgsqlDbType.Text) { Value = $"%{hotelname}%" });
 
             Console.WriteLine("Executing SQL Query:");
             Console.WriteLine(cmd.CommandText);
@@ -87,18 +81,20 @@ public async Task<List<string>> SearchAvailableRooms(
                 Console.WriteLine($"Param: {param.ParameterName}, Value: {param.Value}, Type: {param.NpgsqlDbType}");
             }
 
-            // Utför frågan
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    int accommodationId = reader.GetInt32(0);  // Get the accommodation_id (first column)
-                    string hotelName = reader.GetString(1);     // Get the accommodation_name (second column)
-                    decimal price = reader.GetDecimal(2);       // Get the price_per_night (third column)
-                    string cityResult = reader.GetString(3);    // Get the city (fourth column)
-                    decimal rating = reader.GetDecimal(4);      // Get the ratings (fifth column)
+                    int accommodationId = reader.GetInt32(0);  
+                    string hotelName = reader.GetString(1);     
+                    decimal price = reader.GetDecimal(2);       
+                    string cityResult = reader.GetString(3);    
+                    decimal rating = reader.GetDecimal(4);      
+                    DateTime dateFrom = reader.GetDateTime(5);  // Start date of availability
+                    DateTime dateTo = reader.GetDateTime(6);    // End date of availability
 
-                    availableRooms.Add($"ID: {accommodationId}, Hotel: {hotelName}, Price: {price}, City: {cityResult}, Rating: {rating}");
+                    // Create a formatted string with the details and availability dates
+                    availableRooms.Add($"ID: {accommodationId}, Hotel: {hotelName}, Price: {price}, City: {cityResult}, Rating: {rating}, Available From: {dateFrom.ToShortDateString()} To: {dateTo.ToShortDateString()}");
                 }
             }
         }
@@ -110,6 +106,7 @@ public async Task<List<string>> SearchAvailableRooms(
 
     return availableRooms;
 }
+
 
     public async Task CreateBooking(int customerId, int accommodationId, DateTime startDate, DateTime endDate, bool extraBed, bool halfBoard, bool fullBoard)
     {

@@ -68,7 +68,7 @@ public class Menu
         await PrintMenu();
     }
 
-   private async Task SearchAvailableRooms()
+private async Task SearchAvailableRooms()
 {
     Console.Write("Enter City: ");
     string city = Console.ReadLine() ?? "";
@@ -77,97 +77,53 @@ public class Menu
     string hotelname = Console.ReadLine();
 
     Console.Write("Enter Maximum Price: ");
-    if (!decimal.TryParse(Console.ReadLine(), out decimal maxPrice))
-    {
-        Console.WriteLine("Invalid price input.");
-        return;
-    }
+    string maxPriceInput = Console.ReadLine();
+    decimal? maxPrice = string.IsNullOrEmpty(maxPriceInput) ? (decimal?)null : decimal.Parse(maxPriceInput);
 
     Console.Write("Enter Date Range (YYYY-MM-DD YYYY-MM-DD): ");
     string dateInput = Console.ReadLine();
     string[] dateRange = dateInput.Split(' ');
 
-    if (dateRange.Length != 2 ||
-        !DateTime.TryParse(dateRange[0], out DateTime startDate) ||
-        !DateTime.TryParse(dateRange[1], out DateTime endDate))
+    DateTime? startDate = null;
+    DateTime? endDate = null;
+    if (dateRange.Length == 2 &&
+        DateTime.TryParse(dateRange[0], out DateTime tempStartDate) &&
+        DateTime.TryParse(dateRange[1], out DateTime tempEndDate))
     {
-        Console.WriteLine("Invalid date input. Please enter dates in the format: YYYY-MM-DD YYYY-MM-DD.");
-        return;
+        startDate = tempStartDate;
+        endDate = tempEndDate;
     }
 
-    Console.Write("Room Type: ");
-    string roomType = Console.ReadLine() ?? "";
+    Console.Write("Room Type (or leave blank for any): ");
+    string roomType = Console.ReadLine();
 
     Console.Write("Enter Maximum Distance to Beach: ");
-    if (!int.TryParse(Console.ReadLine(), out int maxDistanceToBeach))
-    {
-        Console.WriteLine("Invalid distance input.");
-        return;
-    }
+    string maxDistanceToBeachInput = Console.ReadLine();
+    int? maxDistanceToBeach = string.IsNullOrEmpty(maxDistanceToBeachInput) ? (int?)null : int.Parse(maxDistanceToBeachInput);
 
     Console.Write("Enter Maximum Distance to Center: ");
-    if (!int.TryParse(Console.ReadLine(), out int maxDistanceToCenter))
-    {
-        Console.WriteLine("Invalid distance input.");
-        return;
-    }
+    string maxDistanceToCenterInput = Console.ReadLine();
+    int? maxDistanceToCenter = string.IsNullOrEmpty(maxDistanceToCenterInput) ? (int?)null : int.Parse(maxDistanceToCenterInput);
 
     Console.Write("Has Pool (true/false): ");
-    if (!bool.TryParse(Console.ReadLine(), out bool hasPool))
-    {
-        Console.WriteLine("Invalid input for pool.");
-        return;
-    }
+    string hasPoolInput = Console.ReadLine();
+    bool? hasPool = string.IsNullOrEmpty(hasPoolInput) ? (bool?)null : bool.Parse(hasPoolInput);
 
     Console.Write("Has Entertainment (true/false): ");
-    if (!bool.TryParse(Console.ReadLine(), out bool hasEntertainment))
-    {
-        Console.WriteLine("Invalid input for entertainment.");
-        return;
-    }
+    string hasEntertainmentInput = Console.ReadLine();
+    bool? hasEntertainment = string.IsNullOrEmpty(hasEntertainmentInput) ? (bool?)null : bool.Parse(hasEntertainmentInput);
 
     Console.Write("Has Kids Club (true/false): ");
-    if (!bool.TryParse(Console.ReadLine(), out bool hasKidsClub))
-    {
-        Console.WriteLine("Invalid input for kids club.");
-        return;
-    }
+    string hasKidsClubInput = Console.ReadLine();
+    bool? hasKidsClub = string.IsNullOrEmpty(hasKidsClubInput) ? (bool?)null : bool.Parse(hasKidsClubInput);
 
     Console.Write("Has Restaurant (true/false): ");
-    if (!bool.TryParse(Console.ReadLine(), out bool hasRestaurant))
-    {
-        Console.WriteLine("Invalid input for restaurant.");
-        return;
-    }
+    string hasRestaurantInput = Console.ReadLine();
+    bool? hasRestaurant = string.IsNullOrEmpty(hasRestaurantInput) ? (bool?)null : bool.Parse(hasRestaurantInput);
 
     Console.Write("Minimum Rating: ");
-    if (!decimal.TryParse(Console.ReadLine(), out decimal minRating))
-    {
-        Console.WriteLine("Invalid rating input.");
-        return;
-    }
-
-    // Dynamisk SQL-fråga
-    string query = @"
-        SELECT a.accommodation_name, a.price_per_night, a.city, a.ratings
-        FROM ledigaRum a
-        WHERE a.city = $1
-          AND a.price_per_night <= $2
-          AND a.distance_to_beach <= $3
-          AND a.distance_to_city_center <= $4
-          AND a.has_pool = $5
-          AND a.has_evening_entertainment = $6
-          AND a.has_kids_club = $7
-          AND a.has_restaurants = $8
-          AND a.ratings >= $9
-          AND a.date_from <= $10
-          AND a.date_to >= $11
-          AND a.room_type = $12";
-
-    if (!string.IsNullOrEmpty(hotelname))
-    {
-        query += " AND a.accommodation_name ILIKE $13";
-    }
+    string minRatingInput = Console.ReadLine();
+    decimal? minRating = string.IsNullOrEmpty(minRatingInput) ? (decimal?)null : decimal.Parse(minRatingInput);
 
     var availableRooms = await _actions.SearchAvailableRooms(
         city, hotelname, maxPrice, startDate, endDate, roomType,
@@ -184,6 +140,7 @@ public class Menu
         Console.WriteLine("No available accommodations match your criteria.");
     }
 }
+
 
     private async Task CreateBooking()
     {
