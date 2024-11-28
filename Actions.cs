@@ -232,22 +232,101 @@ public async Task<List<string>> SearchAvailableRooms(
 }
 
 
-    public async Task DeleteBooking(string bookingId)
+public async Task DisplayAndDeleteBooking(string identifier)
+{
+    try
     {
-        try
+        string query;
+        bool isId = int.TryParse(identifier, out int bookingId);
+
+        if (isId)
         {
-            await using (var cmd = _holidaymaker.CreateCommand("DELETE FROM booking WHERE id = $1"))
+            
+            query = @"
+                SELECT booking.id, booking.start_date, booking.end_date, customers.email 
+                FROM booking
+                INNER JOIN customers ON booking.customer_id = customers.id
+                WHERE booking.id = $1";
+        }
+        else
+        {
+            
+            query = @"
+                SELECT booking.id, booking.start_date, booking.end_date, customers.email 
+                FROM booking
+                INNER JOIN customers ON booking.customer_id = customers.id
+                WHERE customers.email = $1";
+        }
+
+        await using (var cmd = _holidaymaker.CreateCommand(query))
+        {
+            if (isId)
             {
-                cmd.Parameters.AddWithValue(int.Parse(bookingId));
-                await cmd.ExecuteNonQueryAsync();
-                Console.WriteLine("Booking deleted successfully.");
+                
+                cmd.Parameters.AddWithValue(bookingId);
+            }
+            else
+            {
+                
+                cmd.Parameters.AddWithValue(identifier);
+            }
+
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    
+                    Console.WriteLine($"Booking ID: {reader["id"]}");
+                    Console.WriteLine($"Start Date: {reader["start_date"]}");
+                    Console.WriteLine($"End Date: {reader["end_date"]}");
+                    Console.WriteLine($"Email: {reader["email"]}");
+
+                    Console.Write("Do you want to delete this booking? (yes/no): ");
+                    string? input = Console.ReadLine()?.ToLower();
+
+                    if (input == "yes")
+                    {
+                        
+                        await DeleteBookingById((int)reader["id"]);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Deletion canceled.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No booking found with the given identifier.");
+                }
             }
         }
-        catch (Exception ex)
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error retrieving or deleting booking: {ex.Message}");
+    }
+}
+
+private async Task DeleteBookingById(int bookingId)
+{
+    try
+    {
+        string query = "DELETE FROM booking WHERE id = $1";
+
+        await using (var cmd = _holidaymaker.CreateCommand(query))
         {
-            Console.WriteLine($"Error deleting booking: {ex.Message}");
+            cmd.Parameters.AddWithValue(bookingId);
+            await cmd.ExecuteNonQueryAsync();
+            Console.WriteLine("Booking deleted successfully.");
         }
     }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error deleting booking: {ex.Message}");
+    }
+}
+
+
 
     public async Task ListBookings()
     {

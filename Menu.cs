@@ -290,13 +290,14 @@ public class Menu
 
     private async Task DeleteBooking()
     {
-        Console.Write("Enter Booking ID: ");
-        string? bookingId = Console.ReadLine();
-        if (string.IsNullOrEmpty(bookingId))
+        Console.Write("Enter Booking ID or Email: ");
+        string? identifier = Console.ReadLine();
+        if (string.IsNullOrEmpty(identifier))
         {
-            Console.WriteLine("Invalid Booking ID.");
+            Console.WriteLine("Invalid input. Please enter a Booking ID or Email.");
             return;
         }
-        await _actions.DeleteBooking(bookingId);
+        await _actions.DisplayAndDeleteBooking(identifier);
     }
+
 }
