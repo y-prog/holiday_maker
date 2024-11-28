@@ -32,14 +32,14 @@ public async Task<List<string>> SearchAvailableRooms(
 {
     List<string> availableRooms = new List<string>();
 
-    // Updated SQL query with availability dates included
+    
     string query = @"
         SELECT a.accommodation_id, a.accommodation_name, a.price_per_night, a.city, a.ratings, 
                a.date_from, a.date_to
         FROM ledigaRum a
         WHERE 1 = 1"; 
 
-    // Adding conditions to the query (same as your current logic)
+    
     if (!string.IsNullOrEmpty(city)) query += " AND a.city = @city";
     if (maxPrice.HasValue) query += " AND a.price_per_night <= @maxPrice";
     if (maxDistanceToBeach.HasValue) query += " AND a.distance_to_beach <= @maxDistanceToBeach";
@@ -58,7 +58,7 @@ public async Task<List<string>> SearchAvailableRooms(
     {
         await using (var cmd = _holidaymaker.CreateCommand(query))
         {
-            // Adding parameters to the command (same as your current logic)
+            
             if (!string.IsNullOrEmpty(city)) cmd.Parameters.Add(new NpgsqlParameter("@city", NpgsqlTypes.NpgsqlDbType.Text) { Value = city });
             if (maxPrice.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@maxPrice", NpgsqlTypes.NpgsqlDbType.Numeric) { Value = maxPrice.Value });
             if (maxDistanceToBeach.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@maxDistanceToBeach", NpgsqlTypes.NpgsqlDbType.Integer) { Value = maxDistanceToBeach.Value });
@@ -90,10 +90,10 @@ public async Task<List<string>> SearchAvailableRooms(
                     decimal price = reader.GetDecimal(2);       
                     string cityResult = reader.GetString(3);    
                     decimal rating = reader.GetDecimal(4);      
-                    DateTime dateFrom = reader.GetDateTime(5);  // Start date of availability
-                    DateTime dateTo = reader.GetDateTime(6);    // End date of availability
+                    DateTime dateFrom = reader.GetDateTime(5);  
+                    DateTime dateTo = reader.GetDateTime(6);    
 
-                    // Create a formatted string with the details and availability dates
+                    
                     availableRooms.Add($"ID: {accommodationId}, Hotel: {hotelName}, Price: {price}, City: {cityResult}, Rating: {rating}, Available From: {dateFrom.ToShortDateString()} To: {dateTo.ToShortDateString()}");
                 }
             }
@@ -163,14 +163,14 @@ public async Task<List<string>> SearchAvailableRooms(
 {
     try
     {
-        // Kontrollera att antingen bookingId eller email är angivet
+        
         if (string.IsNullOrEmpty(bookingId) && string.IsNullOrEmpty(email))
         {
             Console.WriteLine("Either Booking ID or Email must be provided.");
             return;
         }
 
-        // Förbered datum och bool-värden
+        
         DateTime? parsedStartDate = null;
         DateTime? parsedEndDate = null;
 
@@ -184,7 +184,7 @@ public async Task<List<string>> SearchAvailableRooms(
             parsedEndDate = endDate;
         }
 
-        // SQL för att hantera både Booking ID och Email
+        // både Booking ID och Email
         string sqlQuery = !string.IsNullOrEmpty(bookingId)
             ? @"
                 UPDATE booking 
@@ -207,17 +207,17 @@ public async Task<List<string>> SearchAvailableRooms(
 
         await using (var cmd = _holidaymaker.CreateCommand(sqlQuery))
         {
-            // Lägg till parametrar
+            
             cmd.Parameters.AddWithValue(!string.IsNullOrEmpty(bookingId) ? int.Parse(bookingId) : (object)email);
 
-            // Använd parsed values eller DBNull
+            
             cmd.Parameters.AddWithValue(parsedStartDate.HasValue ? (object)parsedStartDate.Value : DBNull.Value);
             cmd.Parameters.AddWithValue(parsedEndDate.HasValue ? (object)parsedEndDate.Value : DBNull.Value);
             cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newExtraBed) ? (object)DBNull.Value : bool.Parse(newExtraBed));
             cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newHalfBoard) ? (object)DBNull.Value : bool.Parse(newHalfBoard));
             cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newFullBoard) ? (object)DBNull.Value : bool.Parse(newFullBoard));
 
-            // Kör kommandot
+            
             await cmd.ExecuteNonQueryAsync();
             Console.WriteLine("Booking updated successfully.");
         }
