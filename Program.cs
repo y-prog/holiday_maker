@@ -1,13 +1,19 @@
-﻿namespace MenuWithDatabase;
+﻿using System;
+using System.Threading.Tasks;
 
-class Program
+namespace MenuWithDatabase
 {
-    
-    static void Main(string[] args)
+    class Program
     {
-        Database database = new();
-        var db = database.Connection();
-        var actions = new Actions(db);
-        new Menu(actions);
+        static async Task Main(string[] args)
+        {
+            // Initialize the Database and Actions objects
+            var database = new Database();
+            var actions = new Actions(database);
+
+            // Initialize the menu and show it
+            var menu = new Menu(actions);
+            await menu.ShowMenuAsync();
+        }
     }
 }

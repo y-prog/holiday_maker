@@ -1,111 +1,91 @@
 using System;
+using System.Threading.Tasks;
 
-namespace MenuWithDatabase;
-
-
-
-public class Menu
+namespace MenuWithDatabase
 {
-    Actions _actions;
-    public Menu(Actions actions)
+    public class Menu
     {
-        _actions = actions;
-        PrintMenu();
-    }
+        private readonly Actions _actions;
 
-    private void PrintMenu()
-    {
-        Console.WriteLine("Choose option");
-        Console.WriteLine("1. Create Booking");
-        Console.WriteLine("2. Sort Ascending");
-        Console.WriteLine("3. Sort Ratings");
-        Console.WriteLine("4. Insert New Customer");
-        Console.WriteLine("5. Delete one");
-        Console.WriteLine("9. Quit");
-        AskUser();
-    }
-
-    private async void AskUser()
-    {
-        var response = Console.ReadLine();
-        if (response is not null)
+        public Menu(Actions actions)
         {
-            string? id; // define for multiple use below
-            
-            switch (response)
-            {
-                case("1"):
-                    Console.WriteLine("Listing all");
-                    _actions.ListAll(); // test functions 
-                    break;
-                
-                
-                case("2"):
-                    Console.WriteLine("Sort in ascending order by city and room type:");
-
-                    // Prompt user for city and room type for filtering
-                    Console.Write("Enter city name to search (or press Enter to skip): ");
-                    string city = Console.ReadLine();
-
-                    Console.Write("Enter room type (size_id) to search (or press Enter to skip): ");
-                    string sizeIdInput = Console.ReadLine();
-                    int? sizeId = string.IsNullOrWhiteSpace(sizeIdInput) ? (int?)null : int.Parse(sizeIdInput);
-
-                    // Call the SortAfterPrice method with city and sizeId filters
-                    _actions.SortAfterPrice();
-
-                    break;
-
-                
-                case("3"):
-                    Console.WriteLine("Sort by Ratings");
-                    _actions.SortAfterRatings(); // by hotel name
-                    break;
-                    
-                
-                // Inside your menu logic (example case "4" for Registering a New User)
-                case ("4"):
-                    Console.WriteLine("Registering new customer...");
-    
-                    // Collect customer details
-                    Console.Write("First Name: ");
-                    string firstName = Console.ReadLine();
-    
-                    Console.Write("Last Name: ");
-                    string lastName = Console.ReadLine();
-    
-                    Console.Write("Email: ");
-                    string email = Console.ReadLine();
-    
-                    Console.Write("Phone Number: ");
-                    string phoneNumber = Console.ReadLine();
-    
-                    Console.Write("Date of Birth (yyyy-mm-dd): ");
-                    DateTime dateOfBirth = DateTime.Parse(Console.ReadLine());
-
-                    // Call RegisterCustomerAsync to insert the new customer
-                    await _actions.RegisterCustomerAsync(firstName, lastName, email, phoneNumber, dateOfBirth);
-                    Console.WriteLine("Customer added");
-                    break;
-
-                
-                case("5"):
-                    Console.WriteLine("Enter id to delete one");
-                    id = Console.ReadLine();
-                    if (id is not null)
-                    { 
-                        _actions.DeleteOne(id);
-                    }
-                    break;
-                case("9"):
-                    Console.WriteLine("Quitting");
-                    Environment.Exit(0);
-                    break;
-            }
-
-            PrintMenu();
+            _actions = actions;
         }
-        
+
+        public async Task ShowMenuAsync()
+        {
+            while (true)
+            {
+                Console.WriteLine("\nChoose an option:");
+                Console.WriteLine("1. Create Booking");
+                Console.WriteLine("2. Sort Ascending");
+                Console.WriteLine("3. Sort Ratings");
+                Console.WriteLine("4. Insert New Customer");
+                Console.WriteLine("5. Delete One");
+                Console.WriteLine("6. Display Customers");
+                Console.WriteLine("9. Quit");
+
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        // Logic for Create Booking
+                        break;
+
+                    case "2":
+                        // Logic for Sort Ascending
+                        break;
+
+                    case "3":
+                        // Logic for Sort Ratings
+                        break;
+
+                    case "4":
+                        // Insert New Customer
+                        await InsertNewCustomerAsync();
+                        break;
+
+                    case "5":
+                        // Delete One
+                        break;
+
+                    case "6":
+                        // Display Customers
+                        break;
+
+                    case "9":
+                        Console.WriteLine("Exiting...");
+                        return;
+
+                    default:
+                        Console.WriteLine("Invalid option. Please try again.");
+                        break;
+                }
+            }
+        }
+
+        private async Task InsertNewCustomerAsync()
+        {
+            Console.WriteLine("Registering new customer...");
+
+            Console.Write("First Name: ");
+            string firstName = Console.ReadLine();
+
+            Console.Write("Last Name: ");
+            string lastName = Console.ReadLine();
+
+            Console.Write("Email: ");
+            string email = Console.ReadLine();
+
+            Console.Write("Phone Number: ");
+            string phoneNumber = Console.ReadLine();
+
+            Console.Write("Date of Birth (yyyy-mm-dd): ");
+            DateTime dateOfBirth = DateTime.Parse(Console.ReadLine());
+
+            // Call InsertNewCustomerAsync from Actions class
+            await _actions.InsertNewCustomerAsync(firstName, lastName, email, phoneNumber, dateOfBirth);
+        }
     }
-    
 }
