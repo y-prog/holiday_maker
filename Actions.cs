@@ -162,15 +162,21 @@ public async Task<List<string>> SearchAvailableRooms(
         return sortedRooms;
     }
 
-   public async Task UpdateBooking(string bookingId, string? newStartDate, string? newEndDate, string? newExtraBed, string? newHalfBoard, string? newFullBoard)
+ public async Task UpdateBooking(string? bookingId, string? email, string? newStartDate, string? newEndDate, string? newExtraBed, string? newHalfBoard, string? newFullBoard)
 {
     try
     {
-        // Try parsing the start date and end date, default to null if empty
+        // Kontrollera att antingen bookingId eller email är angivet
+        if (string.IsNullOrEmpty(bookingId) && string.IsNullOrEmpty(email))
+        {
+            Console.WriteLine("Either Booking ID or Email must be provided.");
+            return;
+        }
+
+        // Förbered datum och bool-värden
         DateTime? parsedStartDate = null;
         DateTime? parsedEndDate = null;
 
-        // Only parse if the value is not null or empty
         if (!string.IsNullOrEmpty(newStartDate) && DateTime.TryParse(newStartDate, out DateTime startDate))
         {
             parsedStartDate = startDate;
@@ -181,28 +187,40 @@ public async Task<List<string>> SearchAvailableRooms(
             parsedEndDate = endDate;
         }
 
-        await using (var cmd = _holidaymaker.CreateCommand(@"
-            UPDATE booking 
-            SET start_date = COALESCE($2, start_date),
-                end_date = COALESCE($3, end_date),
-                extra_bed = COALESCE($4, extra_bed),
-                half_board = COALESCE($5, half_board),
-                full_board = COALESCE($6, full_board)
-            WHERE id = $1"))
-        {
-            // Add parameters
-            cmd.Parameters.AddWithValue(int.Parse(bookingId));  // Assuming bookingId is valid integer
+        // SQL för att hantera både Booking ID och Email
+        string sqlQuery = !string.IsNullOrEmpty(bookingId)
+            ? @"
+                UPDATE booking 
+                SET start_date = COALESCE($2, start_date),
+                    end_date = COALESCE($3, end_date),
+                    extra_bed = COALESCE($4, extra_bed),
+                    half_board = COALESCE($5, half_board),
+                    full_board = COALESCE($6, full_board)
+                WHERE id = $1"
+            : @"
+                UPDATE booking 
+                SET start_date = COALESCE($2, start_date),
+                    end_date = COALESCE($3, end_date),
+                    extra_bed = COALESCE($4, extra_bed),
+                    half_board = COALESCE($5, half_board),
+                    full_board = COALESCE($6, full_board)
+                WHERE customer_id = (
+                    SELECT id FROM customers WHERE email = $1
+                )";
 
-            // Use parsed date values, or DBNull if not provided (empty)
+        await using (var cmd = _holidaymaker.CreateCommand(sqlQuery))
+        {
+            // Lägg till parametrar
+            cmd.Parameters.AddWithValue(!string.IsNullOrEmpty(bookingId) ? int.Parse(bookingId) : (object)email);
+
+            // Använd parsed values eller DBNull
             cmd.Parameters.AddWithValue(parsedStartDate.HasValue ? (object)parsedStartDate.Value : DBNull.Value);
             cmd.Parameters.AddWithValue(parsedEndDate.HasValue ? (object)parsedEndDate.Value : DBNull.Value);
-
-            // Handle boolean values: if empty, use DBNull.Value
             cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newExtraBed) ? (object)DBNull.Value : bool.Parse(newExtraBed));
             cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newHalfBoard) ? (object)DBNull.Value : bool.Parse(newHalfBoard));
             cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newFullBoard) ? (object)DBNull.Value : bool.Parse(newFullBoard));
 
-            // Execute the update command
+            // Kör kommandot
             await cmd.ExecuteNonQueryAsync();
             Console.WriteLine("Booking updated successfully.");
         }

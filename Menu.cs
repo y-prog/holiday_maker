@@ -256,11 +256,15 @@ public class Menu
 
     private async Task UpdateBooking()
     {
-        Console.Write("Booking ID: ");
+        Console.Write("Booking ID (leave empty if using Email): ");
         string? bookingId = Console.ReadLine();
-        if (string.IsNullOrEmpty(bookingId))
+
+        Console.Write("Email (leave empty if using Booking ID): ");
+        string? email = Console.ReadLine();
+
+        if (string.IsNullOrEmpty(bookingId) && string.IsNullOrEmpty(email))
         {
-            Console.WriteLine("Invalid Booking ID.");
+            Console.WriteLine("You must provide either a Booking ID or an Email.");
             return;
         }
 
@@ -279,8 +283,9 @@ public class Menu
         Console.Write("New Full Board (true/false, leave empty to keep current): ");
         string? newFullBoard = Console.ReadLine();
 
-        await _actions.UpdateBooking(bookingId, newStartDate, newEndDate, newExtraBed, newHalfBoard, newFullBoard);
+        await _actions.UpdateBooking(bookingId, email, newStartDate, newEndDate, newExtraBed, newHalfBoard, newFullBoard);
     }
+
 
 
     private async Task DeleteBooking()
