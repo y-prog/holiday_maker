@@ -141,60 +141,60 @@ private async Task SearchAvailableRooms()
     }
 }
 
-
-    private async Task CreateBooking()
+private async Task CreateBooking()
+{
+    Console.Write("Customer ID: ");
+    if (!int.TryParse(Console.ReadLine(), out int customerId))
     {
-        Console.Write("Customer ID: ");
-        if (!int.TryParse(Console.ReadLine(), out int customerId))
-        {
-            Console.WriteLine("Invalid Customer ID.");
-            return;
-        }
-
-        Console.Write("Accommodation ID: ");
-        if (!int.TryParse(Console.ReadLine(), out int accommodationId))
-        {
-            Console.WriteLine("Invalid Accommodation ID.");
-            return;
-        }
-
-        Console.Write("Start Date (YYYY-MM-DD): ");
-        if (!DateTime.TryParse(Console.ReadLine(), out DateTime startDate))
-        {
-            Console.WriteLine("Invalid Start Date.");
-            return;
-        }
-
-        Console.Write("End Date (YYYY-MM-DD): ");
-        if (!DateTime.TryParse(Console.ReadLine(), out DateTime endDate))
-        {
-            Console.WriteLine("Invalid End Date.");
-            return;
-        }
-
-        Console.Write("Extra Bed (true/false): ");
-        if (!bool.TryParse(Console.ReadLine(), out bool extraBed))
-        {
-            Console.WriteLine("Invalid Extra Bed input.");
-            return;
-        }
-
-        Console.Write("Half Board (true/false): ");
-        if (!bool.TryParse(Console.ReadLine(), out bool halfBoard))
-        {
-            Console.WriteLine("Invalid Half Board input.");
-            return;
-        }
-
-        Console.Write("Full Board (true/false): ");
-        if (!bool.TryParse(Console.ReadLine(), out bool fullBoard))
-        {
-            Console.WriteLine("Invalid Full Board input.");
-            return;
-        }
-
-        await _actions.CreateBooking(customerId, accommodationId, startDate, endDate, extraBed, halfBoard, fullBoard);
+        Console.WriteLine("Invalid Customer ID.");
+        return;
     }
+
+    Console.Write("Accommodation ID: ");
+    if (!int.TryParse(Console.ReadLine(), out int accommodationId))
+    {
+        Console.WriteLine("Invalid Accommodation ID.");
+        return;
+    }
+
+    Console.Write("Start Date (YYYY-MM-DD): ");
+    if (!DateTime.TryParse(Console.ReadLine(), out DateTime startDate))
+    {
+        Console.WriteLine("Invalid Start Date.");
+        return;
+    }
+
+    Console.Write("End Date (YYYY-MM-DD): ");
+    if (!DateTime.TryParse(Console.ReadLine(), out DateTime endDate))
+    {
+        Console.WriteLine("Invalid End Date.");
+        return;
+    }
+
+    Console.Write("Extra Bed (true/false): ");
+    if (!bool.TryParse(Console.ReadLine(), out bool extraBed))
+    {
+        Console.WriteLine("Invalid Extra Bed input.");
+        return;
+    }
+
+    Console.Write("Half Board (true/false): ");
+    if (!bool.TryParse(Console.ReadLine(), out bool halfBoard))
+    {
+        Console.WriteLine("Invalid Half Board input.");
+        return;
+    }
+
+    Console.Write("Full Board (true/false): ");
+    if (!bool.TryParse(Console.ReadLine(), out bool fullBoard))
+    {
+        Console.WriteLine("Invalid Full Board input.");
+        return;
+    }
+
+    // Skicka in alla parametrar till Actions-klassen för att skapa bokningen
+    await _actions.CreateBooking(customerId, accommodationId, startDate, endDate, extraBed, halfBoard, fullBoard);
+}
 
     private async Task SortRooms()
     {

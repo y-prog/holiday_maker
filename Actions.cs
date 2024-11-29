@@ -108,30 +108,36 @@ public async Task<List<string>> SearchAvailableRooms(
 }
 
 
-    public async Task CreateBooking(int customerId, int accommodationId, DateTime startDate, DateTime endDate, bool extraBed, bool halfBoard, bool fullBoard)
+public async Task CreateBooking(int customerId, int accommodationId, DateTime startDate, DateTime endDate, bool extraBed, bool halfBoard, bool fullBoard)
+{
+    try
     {
-        try
-        {
-            await using (var cmd = _holidaymaker.CreateCommand(@"
+        // Skapa en SQL-fråga med placeholders för parametrarna
+        await using (var cmd = _holidaymaker.CreateCommand(@"
                 INSERT INTO booking (customer_id, accommodation_id, start_date, end_date, extra_bed, half_board, full_board) 
                 VALUES ($1, $2, $3, $4, $5, $6, $7)"))
-            {
-                cmd.Parameters.AddWithValue(customerId);
-                cmd.Parameters.AddWithValue(accommodationId);
-                cmd.Parameters.AddWithValue(startDate);
-                cmd.Parameters.AddWithValue(endDate);
-                cmd.Parameters.AddWithValue(extraBed);
-                cmd.Parameters.AddWithValue(halfBoard);
-                cmd.Parameters.AddWithValue(fullBoard);
-                await cmd.ExecuteNonQueryAsync();
-                Console.WriteLine("Booking created successfully.");
-            }
-        }
-        catch (Exception ex)
         {
-            Console.WriteLine($"Error creating booking: {ex.Message}");
+            // Lägg till parametrar för SQL-frågan
+            cmd.Parameters.AddWithValue(customerId);
+            cmd.Parameters.AddWithValue(accommodationId);
+            cmd.Parameters.AddWithValue(startDate);
+            cmd.Parameters.AddWithValue(endDate);
+            cmd.Parameters.AddWithValue(extraBed);
+            cmd.Parameters.AddWithValue(halfBoard);
+            cmd.Parameters.AddWithValue(fullBoard);
+
+            // Exekvera SQL-frågan asynkront
+            await cmd.ExecuteNonQueryAsync();
+            Console.WriteLine("Booking created successfully.");
         }
     }
+    catch (Exception ex)
+    {
+        // Hantera eventuella fel
+        Console.WriteLine($"Error creating booking: {ex.Message}");
+    }
+}
+
 
     public async Task<List<string>> GetSortedRooms(string sortBy)
     {
