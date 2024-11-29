@@ -18,65 +18,60 @@ public class Actions
 public async Task<List<string>> SearchAvailableRooms(
     string city,
     string? hotelname,
-    decimal maxPrice,
-    DateTime startDate,
-    DateTime endDate,
-    string roomType,
-    int maxDistanceToBeach,
-    int maxDistanceToCenter,
-    bool hasPool,
-    bool hasEntertainment,
-    bool hasKidsClub,
-    bool hasRestaurant,
-    decimal minRating)
+    decimal? maxPrice,          
+    DateTime? startDate,        
+    DateTime? endDate,          
+    string? roomType,           
+    int? maxDistanceToBeach,    
+    int? maxDistanceToCenter,   
+    bool? hasPool,              
+    bool? hasEntertainment,     
+    bool? hasKidsClub,          
+    bool? hasRestaurant,        
+    decimal? minRating)         
 {
     List<string> availableRooms = new List<string>();
 
-    // Ny SQL-query med namngivna parametrar
+    
     string query = @"
-        SELECT a.accommodation_name, a.price_per_night, a.city, a.ratings
+        SELECT a.accommodation_id, a.accommodation_name, a.price_per_night, a.city, a.ratings, 
+               a.date_from, a.date_to
         FROM ledigaRum a
-        WHERE a.city = @city
-          AND a.price_per_night <= @maxPrice
-          AND a.distance_to_beach <= @maxDistanceToBeach
-          AND a.distance_to_city_center <= @maxDistanceToCenter
-          AND a.has_pool = @hasPool
-          AND a.has_evening_entertainment = @hasEntertainment
-          AND a.has_kids_club = @hasKidsClub
-          AND a.has_restaurants = @hasRestaurant
-          AND a.ratings >= @minRating
-          AND a.date_from <= @startDate
-          AND a.date_to >= @endDate
-          AND a.room_type = @roomType";
+        WHERE 1 = 1"; 
 
-    // Om hotelname är angivet, lägg till filter
-    if (!string.IsNullOrEmpty(hotelname))
-    {
-        query += " AND a.accommodation_name ILIKE @hotelName";
-    }
+    
+    if (!string.IsNullOrEmpty(city)) query += " AND a.city = @city";
+    if (maxPrice.HasValue) query += " AND a.price_per_night <= @maxPrice";
+    if (maxDistanceToBeach.HasValue) query += " AND a.distance_to_beach <= @maxDistanceToBeach";
+    if (maxDistanceToCenter.HasValue) query += " AND a.distance_to_city_center <= @maxDistanceToCenter";
+    if (hasPool.HasValue) query += " AND a.has_pool = @hasPool";
+    if (hasEntertainment.HasValue) query += " AND a.has_evening_entertainment = @hasEntertainment";
+    if (hasKidsClub.HasValue) query += " AND a.has_kids_club = @hasKidsClub";
+    if (hasRestaurant.HasValue) query += " AND a.has_restaurants = @hasRestaurant";
+    if (minRating.HasValue) query += " AND a.ratings >= @minRating";
+    if (startDate.HasValue) query += " AND a.date_from <= @startDate";
+    if (endDate.HasValue) query += " AND a.date_to >= @endDate";
+    if (!string.IsNullOrEmpty(roomType)) query += " AND a.room_type = @roomType";
+    if (!string.IsNullOrEmpty(hotelname)) query += " AND a.accommodation_name ILIKE @hotelName";
 
     try
     {
         await using (var cmd = _holidaymaker.CreateCommand(query))
         {
-            // Bind parametrarna till SQL-kommandot
-            cmd.Parameters.Add(new NpgsqlParameter("@city", NpgsqlTypes.NpgsqlDbType.Text) { Value = city });
-            cmd.Parameters.Add(new NpgsqlParameter("@maxPrice", NpgsqlTypes.NpgsqlDbType.Numeric) { Value = maxPrice });
-            cmd.Parameters.Add(new NpgsqlParameter("@maxDistanceToBeach", NpgsqlTypes.NpgsqlDbType.Integer) { Value = maxDistanceToBeach });
-            cmd.Parameters.Add(new NpgsqlParameter("@maxDistanceToCenter", NpgsqlTypes.NpgsqlDbType.Integer) { Value = maxDistanceToCenter });
-            cmd.Parameters.Add(new NpgsqlParameter("@hasPool", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasPool });
-            cmd.Parameters.Add(new NpgsqlParameter("@hasEntertainment", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasEntertainment });
-            cmd.Parameters.Add(new NpgsqlParameter("@hasKidsClub", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasKidsClub });
-            cmd.Parameters.Add(new NpgsqlParameter("@hasRestaurant", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasRestaurant });
-            cmd.Parameters.Add(new NpgsqlParameter("@minRating", NpgsqlTypes.NpgsqlDbType.Numeric) { Value = minRating });
-            cmd.Parameters.Add(new NpgsqlParameter("@startDate", NpgsqlTypes.NpgsqlDbType.Timestamp) { Value = startDate });
-            cmd.Parameters.Add(new NpgsqlParameter("@endDate", NpgsqlTypes.NpgsqlDbType.Timestamp) { Value = endDate });
-            cmd.Parameters.Add(new NpgsqlParameter("@roomType", NpgsqlTypes.NpgsqlDbType.Text) { Value = roomType });
-
-            if (!string.IsNullOrEmpty(hotelname))
-            {
-                cmd.Parameters.Add(new NpgsqlParameter("@hotelName", NpgsqlTypes.NpgsqlDbType.Text) { Value = $"%{hotelname}%" });
-            }
+            
+            if (!string.IsNullOrEmpty(city)) cmd.Parameters.Add(new NpgsqlParameter("@city", NpgsqlTypes.NpgsqlDbType.Text) { Value = city });
+            if (maxPrice.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@maxPrice", NpgsqlTypes.NpgsqlDbType.Numeric) { Value = maxPrice.Value });
+            if (maxDistanceToBeach.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@maxDistanceToBeach", NpgsqlTypes.NpgsqlDbType.Integer) { Value = maxDistanceToBeach.Value });
+            if (maxDistanceToCenter.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@maxDistanceToCenter", NpgsqlTypes.NpgsqlDbType.Integer) { Value = maxDistanceToCenter.Value });
+            if (hasPool.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@hasPool", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasPool.Value });
+            if (hasEntertainment.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@hasEntertainment", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasEntertainment.Value });
+            if (hasKidsClub.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@hasKidsClub", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasKidsClub.Value });
+            if (hasRestaurant.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@hasRestaurant", NpgsqlTypes.NpgsqlDbType.Boolean) { Value = hasRestaurant.Value });
+            if (minRating.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@minRating", NpgsqlTypes.NpgsqlDbType.Numeric) { Value = minRating.Value });
+            if (startDate.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@startDate", NpgsqlTypes.NpgsqlDbType.Timestamp) { Value = startDate.Value });
+            if (endDate.HasValue) cmd.Parameters.Add(new NpgsqlParameter("@endDate", NpgsqlTypes.NpgsqlDbType.Timestamp) { Value = endDate.Value });
+            if (!string.IsNullOrEmpty(roomType)) cmd.Parameters.Add(new NpgsqlParameter("@roomType", NpgsqlTypes.NpgsqlDbType.Text) { Value = roomType });
+            if (!string.IsNullOrEmpty(hotelname)) cmd.Parameters.Add(new NpgsqlParameter("@hotelName", NpgsqlTypes.NpgsqlDbType.Text) { Value = $"%{hotelname}%" });
 
             Console.WriteLine("Executing SQL Query:");
             Console.WriteLine(cmd.CommandText);
@@ -86,17 +81,20 @@ public async Task<List<string>> SearchAvailableRooms(
                 Console.WriteLine($"Param: {param.ParameterName}, Value: {param.Value}, Type: {param.NpgsqlDbType}");
             }
 
-            // Utför frågan
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    string hotelName = reader.GetString(0);
-                    decimal price = reader.GetDecimal(1);
-                    string cityResult = reader.GetString(2);
-                    decimal rating = reader.GetDecimal(3);
+                    int accommodationId = reader.GetInt32(0);  
+                    string hotelName = reader.GetString(1);     
+                    decimal price = reader.GetDecimal(2);       
+                    string cityResult = reader.GetString(3);    
+                    decimal rating = reader.GetDecimal(4);      
+                    DateTime dateFrom = reader.GetDateTime(5);  
+                    DateTime dateTo = reader.GetDateTime(6);    
 
-                    availableRooms.Add($"Hotel: {hotelName}, Price: {price}, City: {cityResult}, Rating: {rating}");
+                    
+                    availableRooms.Add($"ID: {accommodationId}, Hotel: {hotelName}, Price: {price}, City: {cityResult}, Rating: {rating}, Available From: {dateFrom.ToShortDateString()} To: {dateTo.ToShortDateString()}");
                 }
             }
         }
@@ -108,13 +106,6 @@ public async Task<List<string>> SearchAvailableRooms(
 
     return availableRooms;
 }
-
-
-
-
-
-
-
 
 
     public async Task CreateBooking(int customerId, int accommodationId, DateTime startDate, DateTime endDate, bool extraBed, bool halfBoard, bool fullBoard)
@@ -168,82 +159,182 @@ public async Task<List<string>> SearchAvailableRooms(
         return sortedRooms;
     }
 
-    public async Task UpdateBooking(string bookingId, string? newStartDate, string? newEndDate, string? newExtraBed, string? newHalfBoard, string? newFullBoard)
+ public async Task UpdateBooking(string? bookingId, string? email, string? newStartDate, string? newEndDate, string? newExtraBed, string? newHalfBoard, string? newFullBoard)
+{
+    try
     {
-        try
+        
+        if (string.IsNullOrEmpty(bookingId) && string.IsNullOrEmpty(email))
         {
-            await using (var cmd = _holidaymaker.CreateCommand(@"
+            Console.WriteLine("Either Booking ID or Email must be provided.");
+            return;
+        }
+
+        
+        DateTime? parsedStartDate = null;
+        DateTime? parsedEndDate = null;
+
+        if (!string.IsNullOrEmpty(newStartDate) && DateTime.TryParse(newStartDate, out DateTime startDate))
+        {
+            parsedStartDate = startDate;
+        }
+
+        if (!string.IsNullOrEmpty(newEndDate) && DateTime.TryParse(newEndDate, out DateTime endDate))
+        {
+            parsedEndDate = endDate;
+        }
+
+        // både Booking ID och Email
+        string sqlQuery = !string.IsNullOrEmpty(bookingId)
+            ? @"
                 UPDATE booking 
                 SET start_date = COALESCE($2, start_date),
                     end_date = COALESCE($3, end_date),
                     extra_bed = COALESCE($4, extra_bed),
                     half_board = COALESCE($5, half_board),
                     full_board = COALESCE($6, full_board)
-                WHERE id = $1"))
-            {
-                cmd.Parameters.AddWithValue(int.Parse(bookingId));
-                cmd.Parameters.AddWithValue(newStartDate);
-                cmd.Parameters.AddWithValue(newEndDate);
-                cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newExtraBed) ? (object)DBNull.Value : bool.Parse(newExtraBed));
-                cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newHalfBoard) ? (object)DBNull.Value : bool.Parse(newHalfBoard));
-                cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newFullBoard) ? (object)DBNull.Value : bool.Parse(newFullBoard));
-                await cmd.ExecuteNonQueryAsync();
-                Console.WriteLine("Booking updated successfully.");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error updating booking: {ex.Message}");
-        }
-    }
+                WHERE id = $1"
+            : @"
+                UPDATE booking 
+                SET start_date = COALESCE($2, start_date),
+                    end_date = COALESCE($3, end_date),
+                    extra_bed = COALESCE($4, extra_bed),
+                    half_board = COALESCE($5, half_board),
+                    full_board = COALESCE($6, full_board)
+                WHERE customer_id = (
+                    SELECT id FROM customers WHERE email = $1
+                )";
 
-    public async Task DeleteBooking(string bookingId)
-    {
-        try
+        await using (var cmd = _holidaymaker.CreateCommand(sqlQuery))
         {
-            await using (var cmd = _holidaymaker.CreateCommand("DELETE FROM booking WHERE id = $1"))
-            {
-                cmd.Parameters.AddWithValue(int.Parse(bookingId));
-                await cmd.ExecuteNonQueryAsync();
-                Console.WriteLine("Booking deleted successfully.");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error deleting booking: {ex.Message}");
+            
+            cmd.Parameters.AddWithValue(!string.IsNullOrEmpty(bookingId) ? int.Parse(bookingId) : (object)email);
+
+            
+            cmd.Parameters.AddWithValue(parsedStartDate.HasValue ? (object)parsedStartDate.Value : DBNull.Value);
+            cmd.Parameters.AddWithValue(parsedEndDate.HasValue ? (object)parsedEndDate.Value : DBNull.Value);
+            cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newExtraBed) ? (object)DBNull.Value : bool.Parse(newExtraBed));
+            cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newHalfBoard) ? (object)DBNull.Value : bool.Parse(newHalfBoard));
+            cmd.Parameters.AddWithValue(string.IsNullOrEmpty(newFullBoard) ? (object)DBNull.Value : bool.Parse(newFullBoard));
+
+            
+            await cmd.ExecuteNonQueryAsync();
+            Console.WriteLine("Booking updated successfully.");
         }
     }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error updating booking: {ex.Message}");
+    }
+}
+
+
+public async Task DisplayAndDeleteBooking(string identifier)
+{
+    try
+    {
+        string query;
+        bool isId = int.TryParse(identifier, out int bookingId);
+
+        if (isId)
+        {
+            
+            query = @"
+                SELECT booking.id, booking.start_date, booking.end_date, customers.email 
+                FROM booking
+                INNER JOIN customers ON booking.customer_id = customers.id
+                WHERE booking.id = $1";
+        }
+        else
+        {
+            
+            query = @"
+                SELECT booking.id, booking.start_date, booking.end_date, customers.email 
+                FROM booking
+                INNER JOIN customers ON booking.customer_id = customers.id
+                WHERE customers.email = $1";
+        }
+
+        await using (var cmd = _holidaymaker.CreateCommand(query))
+        {
+            if (isId)
+            {
+                
+                cmd.Parameters.AddWithValue(bookingId);
+            }
+            else
+            {
+                
+                cmd.Parameters.AddWithValue(identifier);
+            }
+
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    
+                    Console.WriteLine($"Booking ID: {reader["id"]}");
+                    Console.WriteLine($"Start Date: {reader["start_date"]}");
+                    Console.WriteLine($"End Date: {reader["end_date"]}");
+                    Console.WriteLine($"Email: {reader["email"]}");
+
+                    Console.Write("Do you want to delete this booking? (yes/no): ");
+                    string? input = Console.ReadLine()?.ToLower();
+
+                    if (input == "yes")
+                    {
+                        
+                        await DeleteBookingById((int)reader["id"]);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Deletion canceled.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No booking found with the given identifier.");
+                }
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error retrieving or deleting booking: {ex.Message}");
+    }
+}
+
+private async Task DeleteBookingById(int bookingId)
+{
+    try
+    {
+        string query = "DELETE FROM booking WHERE id = $1";
+
+        await using (var cmd = _holidaymaker.CreateCommand(query))
+        {
+            cmd.Parameters.AddWithValue(bookingId);
+            await cmd.ExecuteNonQueryAsync();
+            Console.WriteLine("Booking deleted successfully.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error deleting booking: {ex.Message}");
+    }
+}
+
+
 
     public async Task ListBookings()
     {
         try
         {
-            // SQL-frågan som anropar vyn
-            string query = "SELECT * FROM bokningsInfo";
-
-            await using (var cmd = _holidaymaker.CreateCommand(query))
+            await using (var cmd = _holidaymaker.CreateCommand("SELECT * FROM booking"))
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
-                Console.WriteLine("Bookings:");
                 while (await reader.ReadAsync())
                 {
-                    // Hämta alla relevanta kolumner från vyn
-                    Console.WriteLine($"Booking ID: {reader["booking_id"]}");
-                    Console.WriteLine($"Customer Name: {reader["customer_name"]}");
-                    Console.WriteLine($"Customer Email: {reader["customer_email"]}");
-                    Console.WriteLine($"Customer Phone: {reader["customer_phone"]}");
-                    Console.WriteLine($"Accommodation Name: {reader["accommodation_name"]}");
-                    Console.WriteLine($"City: {reader["city"]}, Country: {reader["country"]}");
-                    Console.WriteLine($"Room Type: {reader["room_type"]}, Beds: {reader["beds"]}, Total Persons: {reader["total_persons"]}");
-                    Console.WriteLine($"Start Date: {reader["start_date"]}, End Date: {reader["end_date"]}");
-                    Console.WriteLine($"Extra Bed: {reader["extra_bed"]}, Half Board: {reader["half_board"]}, Full Board: {reader["full_board"]}");
-                
-                    // Kontrollera om gruppmedlemmar finns
-                    if (reader["group_member_id"] != DBNull.Value && reader["group_member_name"] != DBNull.Value)
-                    {
-                        Console.WriteLine($"Group Member ID: {reader["group_member_id"]}, Name: {reader["group_member_name"]}");
-                    }
-                    Console.WriteLine(new string('-', 50)); // Separator mellan bokningar
+                    Console.WriteLine($"ID: {reader["id"]}, Customer ID: {reader["customer_id"]}, Accommodation ID: {reader["accommodation_id"]}, Start Date: {reader["start_date"]}, End Date: {reader["end_date"]}");
                 }
             }
         }
