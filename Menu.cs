@@ -47,7 +47,12 @@ namespace MenuWithDatabase
                         break;
 
                     case "5":
-                        // Delete One
+                        // Delete Customer
+                        
+                        // Call DeleteCustomer from Actions class
+                        await _actions.DeleteCustomer();
+                        
+
                         break;
 
                     case "6":
