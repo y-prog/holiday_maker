@@ -136,9 +136,18 @@ public async Task<List<string>> SearchAvailableRooms(
     public async Task<List<string>> GetSortedRooms(string sortBy)
     {
         List<string> sortedRooms = new List<string>();
+
+        // Kontrollera om sortBy är giltigt
+        if (sortBy != "price" && sortBy != "rating")
+        {
+            Console.WriteLine("Invalid sort option. Please choose 'price' or 'rating'.");
+            return sortedRooms;
+        }
+
+        // Välj query baserat på sorteringskriterium
         string query = sortBy == "price"
-            ? "SELECT name, price_per_night, ratings FROM filtreraRum ORDER BY price_per_night"
-            : "SELECT name, price_per_night, ratings FROM filtreraRum ORDER BY ratings DESC";
+            ? "SELECT city, price_per_night, ratings FROM filtreraRum ORDER BY price_per_night"
+            : "SELECT city, price_per_night, ratings FROM filtreraRum ORDER BY ratings DESC";
 
         try
         {
@@ -147,7 +156,7 @@ public async Task<List<string>> SearchAvailableRooms(
             {
                 while (await reader.ReadAsync())
                 {
-                    sortedRooms.Add($"Name: {reader.GetString(0)}, Price: {reader.GetDecimal(1)}, Rating: {reader.GetDecimal(2)}");
+                    sortedRooms.Add($"City: {reader.GetString(0)}, Price: {reader.GetDecimal(1)}, Rating: {reader.GetDecimal(2)}");
                 }
             }
         }
@@ -158,6 +167,7 @@ public async Task<List<string>> SearchAvailableRooms(
 
         return sortedRooms;
     }
+
 
  public async Task UpdateBooking(string? bookingId, string? email, string? newStartDate, string? newEndDate, string? newExtraBed, string? newHalfBoard, string? newFullBoard)
 {
