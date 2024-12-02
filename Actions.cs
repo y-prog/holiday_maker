@@ -137,14 +137,14 @@ public async Task<List<string>> SearchAvailableRooms(
     {
         List<string> sortedRooms = new List<string>();
 
-        // Kontrollera om sortBy är giltigt
+        
         if (sortBy != "price" && sortBy != "rating")
         {
             Console.WriteLine("Invalid sort option. Please choose 'price' or 'rating'.");
             return sortedRooms;
         }
 
-        // Välj query baserat på sorteringskriterium
+        
         string query = sortBy == "price"
             ? "SELECT city, price_per_night, ratings FROM filtreraRum ORDER BY price_per_night"
             : "SELECT city, price_per_night, ratings FROM filtreraRum ORDER BY ratings DESC";
