@@ -353,6 +353,43 @@ private async Task DeleteBookingById(int bookingId)
             Console.WriteLine($"Error listing bookings: {ex.Message}");
         }
     }
+    
+    public async Task InsertNewCustomerAsync(string firstName, string lastName, string email, string phoneNumber, DateTime dateOfBirth)
+    {
+        string query = @"
+        INSERT INTO customers (first_name, last_name, email, phone_number, date_of_birth) 
+        VALUES (@FirstName, @LastName, @Email, @PhoneNumber, @DateOfBirth)";
+
+        try
+        {
+            await using (var cmd = _holidaymaker.CreateCommand(query))
+            {
+                // Add parameters with appropriate values
+                cmd.Parameters.Add(new NpgsqlParameter("@FirstName", NpgsqlTypes.NpgsqlDbType.Text) { Value = firstName });
+                cmd.Parameters.Add(new NpgsqlParameter("@LastName", NpgsqlTypes.NpgsqlDbType.Text) { Value = lastName });
+                cmd.Parameters.Add(new NpgsqlParameter("@Email", NpgsqlTypes.NpgsqlDbType.Text) { Value = email });
+                cmd.Parameters.Add(new NpgsqlParameter("@PhoneNumber", NpgsqlTypes.NpgsqlDbType.Text) { Value = phoneNumber });
+                cmd.Parameters.Add(new NpgsqlParameter("@DateOfBirth", NpgsqlTypes.NpgsqlDbType.Date) { Value = dateOfBirth });
+
+                Console.WriteLine("Executing SQL Query:");
+                Console.WriteLine(cmd.CommandText);
+
+                foreach (NpgsqlParameter param in cmd.Parameters)
+                {
+                    Console.WriteLine($"Param: {param.ParameterName}, Value: {param.Value}, Type: {param.NpgsqlDbType}");
+                }
+
+                // Execute the command
+                await cmd.ExecuteNonQueryAsync();
+                Console.WriteLine("Customer inserted successfully.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error while inserting customer: {ex.Message}");
+        }
+    }
+
 
     public async Task ListTable(string tableName)
     {

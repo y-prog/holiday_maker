@@ -21,6 +21,7 @@ public class Menu
         Console.WriteLine("4. Update Booking");
         Console.WriteLine("5. Delete Booking");
         Console.WriteLine("6. List Bookings");
+        Console.WriteLine("7. Register New User");
         Console.WriteLine("98. List Table");
         Console.WriteLine("9. Quit");
         await AskUser();
@@ -49,6 +50,9 @@ public class Menu
                 break;
             case "6":
                 await _actions.ListBookings();
+                break;
+            case "7":
+                await InsertNewCustomerAsync();
                 break;
             case "98":
                 Console.Write("Enter table name: ");
@@ -140,7 +144,28 @@ private async Task SearchAvailableRooms()
         Console.WriteLine("No available accommodations match your criteria.");
     }
 }
+private async Task InsertNewCustomerAsync()
+{
+    Console.WriteLine("Registering new customer...");
 
+    Console.Write("First Name: ");
+    string firstName = Console.ReadLine();
+
+    Console.Write("Last Name: ");
+    string lastName = Console.ReadLine();
+
+    Console.Write("Email: ");
+    string email = Console.ReadLine();
+
+    Console.Write("Phone Number: ");
+    string phoneNumber = Console.ReadLine();
+
+    Console.Write("Date of Birth (yyyy-mm-dd): ");
+    DateTime dateOfBirth = DateTime.Parse(Console.ReadLine());
+
+    // Call InsertNewCustomerAsync from Actions class
+    await _actions.InsertNewCustomerAsync(firstName, lastName, email, phoneNumber, dateOfBirth);
+}
 
     private async Task CreateBooking()
     {
