@@ -49,8 +49,20 @@ public class Menu
                 await DeleteBooking();
                 break;
             case "6":
-                await _actions.ListBookings();
+                Console.WriteLine("Enter customer ID or email to search for bookings, or press Enter to list all bookings:");
+                var filterValue = Console.ReadLine();
+
+                if (string.IsNullOrEmpty(filterValue))
+                {
+                    await _actions.ListBookings(null);
+                }
+                else
+                {
+                    await _actions.ListBookings(filterValue);
+                }
                 break;
+
+
             case "7":
                 await InsertNewCustomerAsync();
                 break;

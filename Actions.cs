@@ -110,34 +110,111 @@ public async Task<List<string>> SearchAvailableRooms(
 
 public async Task CreateBooking(int customerId, int accommodationId, DateTime startDate, DateTime endDate, bool extraBed, bool halfBoard, bool fullBoard)
 {
-    try
+    await using (var conn = _holidaymaker.CreateConnection())
     {
-        await using (var cmd = _holidaymaker.CreateCommand(@"
-            INSERT INTO booking (customer_id, accommodation_id, start_date, end_date, extra_bed, half_board, full_board) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-            ON CONFLICT DO NOTHING"))
+        await conn.OpenAsync();
+
+        
+        await using (var transaction = await conn.BeginTransactionAsync())
         {
-            cmd.Parameters.AddWithValue("$1", customerId);
-            cmd.Parameters.AddWithValue("$2", accommodationId);
-            cmd.Parameters.AddWithValue("$3", startDate);
-            cmd.Parameters.AddWithValue("$4", endDate);
-            cmd.Parameters.AddWithValue("$5", extraBed);
-            cmd.Parameters.AddWithValue("$6", halfBoard);
-            cmd.Parameters.AddWithValue("$7", fullBoard);
+            try
+            {
+                
+                await using (var checkCmd = conn.CreateCommand())
+                {
+                    checkCmd.CommandText = @"
+                        SELECT id
+                        FROM Availability
+                        WHERE accommodation_id = @AccommodationId
+                          AND date_from <= @StartDate
+                          AND date_to >= @EndDate
+                        FOR UPDATE"; 
+                    checkCmd.Transaction = transaction;
 
-            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                    checkCmd.Parameters.AddWithValue("AccommodationId", accommodationId);
+                    checkCmd.Parameters.AddWithValue("StartDate", startDate);
+                    checkCmd.Parameters.AddWithValue("EndDate", endDate);
 
-            if (rowsAffected == 0)
-                Console.WriteLine("Booking already exists.");
-            else
-                Console.WriteLine("Booking created successfully.");
+                    var availabilityId = await checkCmd.ExecuteScalarAsync();
+                    if (availabilityId == null)
+                    {
+                        Console.WriteLine("No availability found for the selected dates.");
+                        return;
+                    }
+                }
+
+                
+                await using (var insertCmd = conn.CreateCommand())
+                {
+                    insertCmd.CommandText = @"
+                        INSERT INTO booking (customer_id, accommodation_id, start_date, end_date, extra_bed, half_board, full_board)
+                        VALUES (@CustomerId, @AccommodationId, @StartDate, @EndDate, @ExtraBed, @HalfBoard, @FullBoard)
+                        ON CONFLICT DO NOTHING";
+                    insertCmd.Transaction = transaction;
+
+                    insertCmd.Parameters.AddWithValue("CustomerId", customerId);
+                    insertCmd.Parameters.AddWithValue("AccommodationId", accommodationId);
+                    insertCmd.Parameters.AddWithValue("StartDate", startDate);
+                    insertCmd.Parameters.AddWithValue("EndDate", endDate);
+                    insertCmd.Parameters.AddWithValue("ExtraBed", extraBed);
+                    insertCmd.Parameters.AddWithValue("HalfBoard", halfBoard);
+                    insertCmd.Parameters.AddWithValue("FullBoard", fullBoard);
+
+                    int rowsAffected = await insertCmd.ExecuteNonQueryAsync();
+
+                    if (rowsAffected == 0)
+                    {
+                        Console.WriteLine("Booking already exists.");
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Booking created successfully.");
+                    }
+                }
+
+                
+                await using (var deleteCmd = conn.CreateCommand())
+                {
+                    deleteCmd.CommandText = @"
+                        DELETE FROM Availability
+                        WHERE accommodation_id = @AccommodationId
+                          AND date_from <= @StartDate
+                          AND date_to >= @EndDate";
+                    deleteCmd.Transaction = transaction;
+
+                    deleteCmd.Parameters.AddWithValue("AccommodationId", accommodationId);
+                    deleteCmd.Parameters.AddWithValue("StartDate", startDate);
+                    deleteCmd.Parameters.AddWithValue("EndDate", endDate);
+
+                    int deleteRows = await deleteCmd.ExecuteNonQueryAsync();
+
+                    if (deleteRows == 0)
+                    {
+                        Console.WriteLine("No availability was deleted. Check the availability dates.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Availability deleted successfully.");
+                    }
+                }
+
+                
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                
+                await transaction.RollbackAsync();
+                Console.WriteLine($"Error creating booking: {ex.Message}");
+            }
         }
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error creating booking: {ex.Message}");
-    }
 }
+
+
+
+
 
 
 
@@ -203,7 +280,7 @@ public async Task CreateBooking(int customerId, int accommodationId, DateTime st
             parsedEndDate = endDate;
         }
 
-        // både Booking ID och Email
+        
         string sqlQuery = !string.IsNullOrEmpty(bookingId)
             ? @"
                 UPDATE booking 
@@ -344,24 +421,37 @@ private async Task DeleteBookingById(int bookingId)
 
 
 
-    public async Task ListBookings()
+public async Task ListBookings(string filterValue)
+{
+    try
     {
-        try
+        
+        string query = @"
+            SELECT * 
+            FROM bokningsInfo
+            WHERE customer_id::TEXT = @FilterValue OR customer_email = @FilterValue";
+
+        await using (var cmd = _holidaymaker.CreateCommand(query))
         {
-            await using (var cmd = _holidaymaker.CreateCommand("SELECT * FROM booking"))
+            
+            cmd.Parameters.AddWithValue("FilterValue", filterValue);
+
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    Console.WriteLine($"ID: {reader["id"]}, Customer ID: {reader["customer_id"]}, Accommodation ID: {reader["accommodation_id"]}, Start Date: {reader["start_date"]}, End Date: {reader["end_date"]}");
+                    Console.WriteLine($"Booking ID: {reader["booking_id"]}, Customer Name: {reader["customer_name"]}, Email: {reader["customer_email"]}, Accommodation: {reader["accommodation_name"]}, Start Date: {reader["start_date"]}, End Date: {reader["end_date"]}");
                 }
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error listing bookings: {ex.Message}");
-        }
     }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error listing bookings: {ex.Message}");
+    }
+}
+
+
     
     public async Task InsertNewCustomerAsync(string firstName, string lastName, string email, string phoneNumber, DateTime dateOfBirth)
     {
@@ -373,7 +463,7 @@ private async Task DeleteBookingById(int bookingId)
         {
             await using (var cmd = _holidaymaker.CreateCommand(query))
             {
-                // Add parameters with appropriate values
+                
                 cmd.Parameters.Add(new NpgsqlParameter("@FirstName", NpgsqlTypes.NpgsqlDbType.Text) { Value = firstName });
                 cmd.Parameters.Add(new NpgsqlParameter("@LastName", NpgsqlTypes.NpgsqlDbType.Text) { Value = lastName });
                 cmd.Parameters.Add(new NpgsqlParameter("@Email", NpgsqlTypes.NpgsqlDbType.Text) { Value = email });
@@ -388,7 +478,7 @@ private async Task DeleteBookingById(int bookingId)
                     Console.WriteLine($"Param: {param.ParameterName}, Value: {param.Value}, Type: {param.NpgsqlDbType}");
                 }
 
-                // Execute the command
+                
                 await cmd.ExecuteNonQueryAsync();
                 Console.WriteLine("Customer inserted successfully.");
             }
