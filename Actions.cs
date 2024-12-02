@@ -136,9 +136,18 @@ public async Task<List<string>> SearchAvailableRooms(
     public async Task<List<string>> GetSortedRooms(string sortBy)
     {
         List<string> sortedRooms = new List<string>();
+
+        
+        if (sortBy != "price" && sortBy != "rating")
+        {
+            Console.WriteLine("Invalid sort option. Please choose 'price' or 'rating'.");
+            return sortedRooms;
+        }
+
+        
         string query = sortBy == "price"
-            ? "SELECT name, price_per_night, ratings FROM filtreraRum ORDER BY price_per_night"
-            : "SELECT name, price_per_night, ratings FROM filtreraRum ORDER BY ratings DESC";
+            ? "SELECT city, price_per_night, ratings FROM filtreraRum ORDER BY price_per_night"
+            : "SELECT city, price_per_night, ratings FROM filtreraRum ORDER BY ratings DESC";
 
         try
         {
@@ -147,7 +156,7 @@ public async Task<List<string>> SearchAvailableRooms(
             {
                 while (await reader.ReadAsync())
                 {
-                    sortedRooms.Add($"Name: {reader.GetString(0)}, Price: {reader.GetDecimal(1)}, Rating: {reader.GetDecimal(2)}");
+                    sortedRooms.Add($"City: {reader.GetString(0)}, Price: {reader.GetDecimal(1)}, Rating: {reader.GetDecimal(2)}");
                 }
             }
         }
@@ -158,6 +167,7 @@ public async Task<List<string>> SearchAvailableRooms(
 
         return sortedRooms;
     }
+
 
  public async Task UpdateBooking(string? bookingId, string? email, string? newStartDate, string? newEndDate, string? newExtraBed, string? newHalfBoard, string? newFullBoard)
 {
@@ -343,6 +353,43 @@ private async Task DeleteBookingById(int bookingId)
             Console.WriteLine($"Error listing bookings: {ex.Message}");
         }
     }
+    
+    public async Task InsertNewCustomerAsync(string firstName, string lastName, string email, string phoneNumber, DateTime dateOfBirth)
+    {
+        string query = @"
+        INSERT INTO customers (first_name, last_name, email, phone_number, date_of_birth) 
+        VALUES (@FirstName, @LastName, @Email, @PhoneNumber, @DateOfBirth)";
+
+        try
+        {
+            await using (var cmd = _holidaymaker.CreateCommand(query))
+            {
+                // Add parameters with appropriate values
+                cmd.Parameters.Add(new NpgsqlParameter("@FirstName", NpgsqlTypes.NpgsqlDbType.Text) { Value = firstName });
+                cmd.Parameters.Add(new NpgsqlParameter("@LastName", NpgsqlTypes.NpgsqlDbType.Text) { Value = lastName });
+                cmd.Parameters.Add(new NpgsqlParameter("@Email", NpgsqlTypes.NpgsqlDbType.Text) { Value = email });
+                cmd.Parameters.Add(new NpgsqlParameter("@PhoneNumber", NpgsqlTypes.NpgsqlDbType.Text) { Value = phoneNumber });
+                cmd.Parameters.Add(new NpgsqlParameter("@DateOfBirth", NpgsqlTypes.NpgsqlDbType.Date) { Value = dateOfBirth });
+
+                Console.WriteLine("Executing SQL Query:");
+                Console.WriteLine(cmd.CommandText);
+
+                foreach (NpgsqlParameter param in cmd.Parameters)
+                {
+                    Console.WriteLine($"Param: {param.ParameterName}, Value: {param.Value}, Type: {param.NpgsqlDbType}");
+                }
+
+                // Execute the command
+                await cmd.ExecuteNonQueryAsync();
+                Console.WriteLine("Customer inserted successfully.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error while inserting customer: {ex.Message}");
+        }
+    }
+
 
     public async Task ListTable(string tableName)
     {
